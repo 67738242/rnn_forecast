@@ -400,6 +400,9 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
+        if early_stopping.validate(val_loss):
+           break
+
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
     for l in range(input_digits)]
