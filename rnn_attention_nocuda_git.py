@@ -141,6 +141,8 @@ def normdist(x,mu,sigma):
     # ndarray xに対する平均mu, 標準偏差sigmaの正規分布の確率密度関数を返す関数
     return np.array([norm.pdf(x = x[i], loc = mu, scale = sigma) for i in range(len(x)) ])
 
+early_stopping = Early_Stopping(patience=10, verbose=1)
+
 eval_data_set_kari = hlt.eval_series_data()
 eval_data_set = eval_data_set_kari
 eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
