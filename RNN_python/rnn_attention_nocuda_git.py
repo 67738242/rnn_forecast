@@ -132,7 +132,7 @@ class Early_Stopping():
             self._step = 0
             self._loss = loss
 
-            return False
+        return False
 
 
 def mape_evaluation(p_data, day_d):
@@ -142,7 +142,6 @@ def normdist(x,mu,sigma):
     # ndarray xに対する平均mu, 標準偏差sigmaの正規分布の確率密度関数を返す関数
     return np.array([norm.pdf(x = x[i], loc = mu, scale = sigma) for i in range(len(x)) ])
 
-early_stopping = Early_Stopping(patience=10, verbose=1)
 
 eval_data_set_kari = hlt.eval_series_data()
 eval_data_set = eval_data_set_kari
@@ -359,6 +358,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     input_data_train, input_data_validation, true_data_train, \
         true_data_validation = train_test_split(input_data, true_data, \
             test_size = N_validation)
+
+    early_stopping = Early_Stopping(patience=10, verbose=1)
 
     # print('input_data_train = ', input_data_train[1:4])
     # print(len(input_data_train[0]))
