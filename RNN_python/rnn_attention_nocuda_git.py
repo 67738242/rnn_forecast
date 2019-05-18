@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import pathlib
 import holitest as hlt
-import s_arima_mod as sam
+# import s_arima_mod as sam
 import tensorflow.contrib.eager as tfe
 from tensorflow.contrib import rnn
 from tensorflow.contrib import seq2seq
