@@ -10,6 +10,7 @@ from tensorflow.contrib import rnn
 from tensorflow.contrib import seq2seq
 from tensorflow.contrib import cudnn_rnn
 from tensorflow.nn import rnn_cell
+
 # from tensorflow.python import debug as tf_debug
 
 # import make_slide_win as msw
@@ -131,7 +132,7 @@ class Early_Stopping():
             self._step = 0
             self._loss = loss
 
-        return False
+            return False
 
 
 def mape_evaluation(p_data, day_d):
