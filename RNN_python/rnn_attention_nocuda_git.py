@@ -199,42 +199,31 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 # print(nom_batch[0], len(nom_batch[0]))
                 return nom_batch
 
-        encoder = rnn_cell.GRUCell(n_hidden)
+        encoder_forward = rnn_cell.GRUCell(n_hidden)
+        encoder_backward = rnn_cell.GRUCell(n_hidden)
         encoder_outputs = []
         encoder_states = []
 
+        x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
+        x = tf.reshape(x, [-1, n_in])
+        x = tf.split(x, input_digits, 0)
         # Encode
-        # encoder = cudnn_rnn.CudnnGRU(
-        #                             num_layers=1,
-        #                             num_units=int(n_hidden),
-        #                             input_mode='auto_select',
-        #                             # direction='bidirectional',
-        #                             dtype=tf.float32)
 
         state = encoder.zero_state(n_batch, tf.float32)
 
-        # [input_digits, n_batch, 1], [1, n_batch, n_hidden]
-        # encoder_outputs, encoder_states = \
-        #     encoder(tf.reshape(batch_normalization(input_digits, x), \
-        #                 [input_digits, n_batch, n_in]),
-        #             # initial_state = state,
-        #             training = True
-        #             )
+        # with tf.variable_scope('Encoder'):
+        #     for t in range(input_digits):
+        #         if t > 0:
+        #             tf.get_variable_scope().reuse_variables()
+        #         (output, state) = encoder(batch_normalization(input_digits, x)[:, t, :], state)
+        #         encoder_outputs.append(output)
+        #         encoder_states.append(state)
 
-        with tf.variable_scope('Encoder'):
-            for t in range(input_digits):
-                if t > 0:
-                    tf.get_variable_scope().reuse_variables()
-                (output, state) = encoder(batch_normalization(input_digits, x)[:, t, :], state)
-                encoder_outputs.append(output)
-                encoder_states.append(state)
-
-
-        # encoder = seq2seq.AttentionWrapper(encoder,
-        #                                     attention_mechanism = AttentionMechanism,
-        #                                     attention_layer_size = 128,
-        #                                     initial_cell_state = \
-        #                                     AttentionWrapper.zero_state(n_batch, tf.float32))
+        encoder_outputs, encoder_states_fw, encoder_states_bw = rnn_cell.static_bidirectional_rnn(
+            encoder_forward,
+            encoder_backward,
+            x,
+            dtype=tf.float32)
 
         # Decode
 
@@ -402,8 +391,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
-        if early_stopping.validate(val_loss):
-           break
+        # if early_stopping.validate(val_loss):
+        #    break
 
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
