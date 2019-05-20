@@ -238,21 +238,32 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                                                         # normalize=True)
 
 
-        decoder = rnn_cell.GRUCell(n_hidden)
-        decoder = seq2seq.AttentionWrapper(decoder,
+        decoder_1 = rnn_cell.GRUCell(n_hidden)
+        decoder_2 = rnn_cell.GRUCell(n_hidden)
+
+        decoder_1= seq2seq.AttentionWrapper(decoder_1,
                                            attention_mechanism = AttentionMechanism,
                                            attention_layer_size = 50,
                                            output_attention = False)
                                            # initial_cell_state = encoder_states[-1])こいつが悪い
 
+        decoder_2= seq2seq.AttentionWrapper(decoder_2,
+                                           attention_mechanism = AttentionMechanism,
+                                           attention_layer_size = 50,
+                                           output_attention = False)
 
-        state = decoder.zero_state(n_batch, tf.float32)\
-            .clone(cell_state=tf.reshape(encoder_states[-1], [n_batch, n_hidden]))
+
+        state_1 = decoder.zero_state(n_batch, tf.float32)\
+            .clone(cell_state=tf.reshape(encoder_states_fw[-1], [n_batch, n_hidden]))
+
+        state_2 = decoder.zero_state(n_batch, tf.float32)\
+            .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
+
         # state = encoder_states[-1]
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
         # なんでかスライスだけエラーなし？
-        decoder_outputs = [encoder_outputs[-1]]
+        decoder_2_outputs = [encoder_outputs[-1]]
         # decoder_outputs = [encoder_outputs[-1]]
         # 出力層の重みとバイアスを事前に定義
         V = weight_variable([n_hidden, n_out])
@@ -271,18 +282,20 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
-                    (output, state) = decoder(batch_normalization(output_digits, y)[:, t-1, :], state)
+                    (output_1, state_1) = decoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
+                    (output_2, state_2) = decoder_2(output_1, state_2)
                 else:
                     # 直前の出力を求める
-                    out = tf.matmul(decoder_outputs[-1], V) + c
+                    out = tf.matmul(decoder_2_outputs[-1], V) + c
                     # elems = decoder_outputs[-1], V , c
                     # out = tf.map_fn(lambda x: x[0] * x[1] + x[2], elems)
                     # out = decoder_outputs
                     outputs.append(out)
-                    (output, state) = decoder(out, state)
+                    (out, state_1) = decoder_1(out, state_1)
+                    (output, state) = decoder_2(out, state_2)
 
                 # decoder_outputs.append(output)
-                decoder_outputs = tf.concat([decoder_outputs, tf.reshape(output, [1, n_batch, n_hidden])], axis = 0)
+                decoder_2_outputs = tf.concat([decoder_2_outputs, tf.reshape(output, [1, n_batch, n_hidden])], axis = 0)
                 # decoder_outputs = tf.concat([decoder_outputs, output], 1)
         if is_training is True:
             output = tf.reshape(tf.concat(decoder_outputs, axis=1),
