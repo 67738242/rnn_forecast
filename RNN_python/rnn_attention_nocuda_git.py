@@ -219,7 +219,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         #         encoder_outputs.append(output)
         #         encoder_states.append(state)
 
-        encoder_outputs, encoder_states_fw, encoder_states_bw = rnn_cell.static_bidirectional_rnn(
+        encoder_outputs, encoder_states_fw, encoder_states_bw = tf.nn.static_bidirectional_rnn(
             encoder_forward,
             encoder_backward,
             x,
