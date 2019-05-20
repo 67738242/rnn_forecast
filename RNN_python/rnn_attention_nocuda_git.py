@@ -209,7 +209,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         x = tf.split(x, input_digits, 0)
         # Encode
 
-        state = encoder.zero_state(n_batch, tf.float32)
+        # state = encoder.zero_state(n_batch, tf.float32)
 
         # with tf.variable_scope('Encoder'):
         #     for t in range(input_digits):
