@@ -230,7 +230,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         AttentionMechanism = seq2seq.BahdanauAttention(num_units=100,
                                                         memory=tf.reshape(encoder_outputs, \
-                                                            [n_batch, input_digits, n_hidden * 1])
+                                                            [n_batch, input_digits, n_hidden * 2])
                                                         )
                                                         # when use bidirectional, n_hidden * 2
                                                         # tf.reshape(encoder_outputs, n_batch, input_digits, ),
@@ -263,11 +263,19 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
         # なんでかスライスだけエラーなし？
-        decoder_2_outputs = [encoder_outputs[-1]]
+        decoder_1_outputs = [encoder_outputs[-1, :, :n_hidden]]
+        decoder_2_outputs = [encoder_outputs[-1, :, n_hidden:]]
         # decoder_outputs = [encoder_outputs[-1]]
         # 出力層の重みとバイアスを事前に定義
-        V = weight_variable([n_hidden, n_out])
-        c = bias_variable([n_out])
+        V_hid_1 = weight_variable([n_hidden, n_out])
+        c_hid_1 = bias_variable([n_out])
+
+        V_hid_2 = weight_variable([n_hidden, n_out])
+        c_hid_2 = bias_variable([n_out])
+
+        V_out = weight_variable([n_hidden * 2, n_out])
+        c_out = bias_variable([n_out])
+
         outputs = []
 
         # decoder = seq2seq.BasicDecoder(cell = decoder,
@@ -283,29 +291,31 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
                 if is_training is True:
                     (output_1, state_1) = decoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
-                    (output_2, state_2) = decoder_2(output_1, state_2)
+                    (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
-                    out = tf.matmul(decoder_2_outputs[-1], V) + c
+                    out_1 = tf.matmul(decoder_1_outputs[-1], V_hid_1) + c_hid_1
+                    out_2 = tf.matmul(decoder_2_outputs[-1], V_hid_2) + c_hid_2
                     # elems = decoder_outputs[-1], V , c
                     # out = tf.map_fn(lambda x: x[0] * x[1] + x[2], elems)
                     # out = decoder_outputs
                     outputs.append(out)
-                    (out, state_1) = decoder_1(out, state_1)
-                    (output, state) = decoder_2(out, state_2)
+                    (out_1, state_1) = decoder_1(out_1, state_1)
+                    (out_2, state_2) = decoder_2(out_2, state_2)
 
                 # decoder_outputs.append(output)
-                decoder_2_outputs = tf.concat([decoder_2_outputs, tf.reshape(output, [1, n_batch, n_hidden])], axis = 0)
+                decoder_1_outputs = tf.concat([decoder_1_outputs, tf.reshape(output_1, [1, n_batch, n_hidden])], axis = 0)
+                decoder_2_outputs = tf.concat([decoder_2_outputs, tf.reshape(output_2, [1, n_batch, n_hidden])], axis = 0)
                 # decoder_outputs = tf.concat([decoder_outputs, output], 1)
         if is_training is True:
-            output = tf.reshape(tf.concat(decoder_outputs, axis=1),
-                                [-1, output_digits, n_hidden])
+            output = tf.reshape(tf.concat(decoder_1_outputs, decoder_2_outputs, axis=1),
+                                [-1, output_digits, n_hidden * 2])
             with tf.name_scope('check'):
-                linear = tf.einsum('ijk,kl->ijl', output, V, ) + c
+                linear = tf.einsum('ijk,kl->ijl', output, V_out, ) + c_out
                 return linear
         else:
             # 最後の出力を求める
-            linear = tf.matmul(decoder_outputs[-1], V) + c
+            linear = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
             outputs.append(linear)
 
             output = tf.reshape(tf.concat(outputs, axis=1),
