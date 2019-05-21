@@ -289,6 +289,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             for t in range(1, output_digits):
                 if t > 1:
                     tf.get_variable_scope().reuse_variables()
+                    tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
                     (output_1, state_1) = decoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
