@@ -224,7 +224,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             encoder_backward,
             x,
             dtype=tf.float32)
-
+        # encoder_outputs size = [time][batch][cell_fw.output_size + cell_bw.output_size]
         # Decode
 
 
@@ -263,7 +263,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
         # なんでかスライスだけエラーなし？
-        decoder_1_outputs = encoder_outputs[:-1, 0:]
+        decoder_1_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, 0], [input_digits-1, n_batch, n_hidden])
         decoder_2_outputs = encoder_outputs[:, :, n_hidden:][-1]
         # decoder_outputs = [encoder_outputs[-1]]
         # 出力層の重みとバイアスを事前に定義
