@@ -263,7 +263,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
         # なんでかスライスだけエラーなし？
-        decoder_1_outputs = encoder_outputs[-1]
+        decoder_1_outputs = encoder_outputs[-1, 0:, :n_hidden]
         decoder_2_outputs = encoder_outputs[:, :, n_hidden:][-1]
         # decoder_outputs = [encoder_outputs[-1]]
         # 出力層の重みとバイアスを事前に定義
