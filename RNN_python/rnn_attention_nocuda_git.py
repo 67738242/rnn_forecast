@@ -238,7 +238,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                                                         # normalize=True)
 
 
-        decoder_1 = rnn_cell.GRUCell(n_hidden)
+        decoder_1 = rnn_cell.GRUCell(n_hidden, reuse = True)
         decoder_2 = rnn_cell.GRUCell(n_hidden)
 
         decoder_1= seq2seq.AttentionWrapper(decoder_1,
