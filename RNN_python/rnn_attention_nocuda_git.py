@@ -277,7 +277,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         V_out = weight_variable([n_hidden * 2, n_out])
         c_out = bias_variable([n_out])
 
-        outputs = []
+        fc_outputs = []
 
         # decoder = seq2seq.BasicDecoder(cell = decoder,
         #                                 heiper = helper,
@@ -295,12 +295,15 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
-                    out_1 = tf.matmul(decoder_1_outputs[-1], V_hid_1) + c_hid_1
-                    out_2 = tf.matmul(decoder_2_outputs[-1], V_hid_2) + c_hid_2
+                    out_1 = tf.matmul(decoder_1_outputs[-1], V_hid_1) + c_hid_1#to hidden layer
+                    out_2 = tf.matmul(decoder_2_outputs[-1], V_hid_2) + c_hid_2#to hidden layer
+                    fc_out = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
+                    #forecast data
+
                     # elems = decoder_outputs[-1], V , c
                     # out = tf.map_fn(lambda x: x[0] * x[1] + x[2], elems)
                     # out = decoder_outputs
-                    outputs.append(out)
+                    fc_outputs.append(fc_out)
                     (out_1, state_1) = decoder_1(out_1, state_1)
                     (out_2, state_2) = decoder_2(out_2, state_2)
 
@@ -316,10 +319,10 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 return linear
         else:
             # 最後の出力を求める
-            linear = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
-            outputs.append(linear)
+            fc_out = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
+            fc_outputs.append(fc_out)
 
-            output = tf.reshape(tf.concat(outputs, axis=1),
+            output = tf.reshape(tf.concat(fc_outputs, axis=1),
                                 [-1, output_digits, n_out])
             return output
 
