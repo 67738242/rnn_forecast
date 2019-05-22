@@ -251,7 +251,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                                            attention_mechanism = AttentionMechanism,
                                            attention_layer_size = 50,
                                            output_attention = False,
-                                           name = att_lay_2)
+                                           name = 'att_lay_2')
 
 
         state_1 = decoder_1.zero_state(n_batch, tf.float32)\
