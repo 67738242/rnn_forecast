@@ -34,9 +34,9 @@ learning_rate = 0.001
 learning_data_day_len = 10
 input_digits = 24 * 5
 output_digits = 24
-n_hidden = 150
+n_hidden = 300
 epochs = 200
-batch_size = 10
+batch_size = 30
 
 ample = 0
 # day = 'Tue'
