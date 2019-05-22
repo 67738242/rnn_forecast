@@ -204,9 +204,9 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         encoder_outputs = []
         encoder_states = []
 
-        x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
-        x = tf.reshape(x, [-1, n_in])
-        x = tf.split(x, input_digits, 0)
+        # x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
+        # x = tf.reshape(x, [-1, n_in])
+        # x = tf.split(x, input_digits, 0)
         # Encode
 
         # state = encoder.zero_state(n_batch, tf.float32)
@@ -222,7 +222,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         encoder_outputs, encoder_states_fw, encoder_states_bw = tf.nn.static_bidirectional_rnn(
             encoder_forward,
             encoder_backward,
-            x,
+            batch_normalization(input_digits, x),
             dtype=tf.float32)
         # encoder_outputs size = [time][batch][cell_fw.output_size + cell_bw.output_size]
         # Decode
