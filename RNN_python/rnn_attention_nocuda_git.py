@@ -250,7 +250,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         decoder_2= seq2seq.AttentionWrapper(decoder_2,
                                            attention_mechanism = AttentionMechanism,
                                            attention_layer_size = 50,
-                                           output_attention = False
+                                           output_attention = False,
                                            name = att_lay_2)
 
 
