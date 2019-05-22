@@ -206,8 +206,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         # size = [batch_size][input_digits][input_len]
         x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
-        # x = tf.reshape(x, [-1, n_in])
-        # x = tf.split(x, input_digits, 0)
+        x = tf.reshape(x, [-1, n_in])
+        x = tf.split(x, input_digits, 0)
         # Encode
 
         # state = encoder.zero_state(n_batch, tf.float32)
