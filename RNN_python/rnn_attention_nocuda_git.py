@@ -306,8 +306,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     # out = tf.map_fn(lambda x: x[0] * x[1] + x[2], elems)
                     # out = decoder_outputs
                     fc_outputs.append(fc_out)
-                    (out_1, state_1) = decoder_1(out_1, state_1)
-                    (out_2, state_2) = decoder_2(out_2, state_2)
+                    (output_1, state_1) = decoder_1(out_1, state_1)
+                    (output_2, state_2) = decoder_2(out_2, state_2)
 
                 # decoder_outputs.append(output)
                 decoder_1_outputs = tf.concat([decoder_1_outputs, tf.reshape(output_1, [1, n_batch, n_hidden])], axis = 0)
