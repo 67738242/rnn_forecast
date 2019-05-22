@@ -224,8 +224,10 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             encoder_forward,
             encoder_backward,
             x,
-            dtype=tf.float32)
+            dtype=tf.float32,
+            sequence_length=n_batch)
         # encoder_outputs size = [time][batch][cell_fw.output_size + cell_bw.output_size]
+        # encoder_states_fw, encoder_states_bw is final state
         # Decode
 
 
