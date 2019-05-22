@@ -199,12 +199,13 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 # print(nom_batch[0], len(nom_batch[0]))
                 return nom_batch
 
-        encoder_forward = rnn_cell.GRUCell(n_hidden)
-        encoder_backward = rnn_cell.GRUCell(n_hidden)
+        encoder_forward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
+        encoder_backward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
         encoder_outputs = []
         encoder_states = []
 
-        # x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
+        # size = [batch_size][input_digits][input_len]
+        x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
         # x = tf.reshape(x, [-1, n_in])
         # x = tf.split(x, input_digits, 0)
         # Encode
@@ -222,7 +223,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         encoder_outputs, encoder_states_fw, encoder_states_bw = tf.nn.static_bidirectional_rnn(
             encoder_forward,
             encoder_backward,
-            batch_normalization(input_digits, x),
+            x,
             dtype=tf.float32)
         # encoder_outputs size = [time][batch][cell_fw.output_size + cell_bw.output_size]
         # Decode
@@ -376,7 +377,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     input_data_train, input_data_validation, true_data_train, \
         true_data_validation = train_test_split(input_data, true_data, \
             test_size = N_validation)
-
+    # size = [batch_size][input_digits][input_len]
     early_stopping = Early_Stopping(patience=10, verbose=1)
 
     # print('input_data_train = ', input_data_train[1:4])
