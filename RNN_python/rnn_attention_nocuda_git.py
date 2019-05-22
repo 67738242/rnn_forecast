@@ -224,8 +224,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             encoder_forward,
             encoder_backward,
             x,
-            dtype=tf.float32,
-            sequence_length=n_batch)
+            dtype=tf.float32
+            )
         # encoder_outputs size = [time][batch][cell_fw.output_size + cell_bw.output_size]
         # encoder_states_fw, encoder_states_bw is final state
         # Decode
@@ -256,12 +256,11 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                                            output_attention = False,
                                            name = 'att_lay_2')
 
+        state_1 = decoder_1.zero_state(n_batch, tf.float32)
+            # .clone(cell_state=tf.reshape(encoder_states_fw[-1], [n_batch, n_hidden]))
 
-        state_1 = decoder_1.zero_state(n_batch, tf.float32)\
-            .clone(cell_state=tf.reshape(encoder_states_fw[-1], [n_batch, n_hidden]))
-
-        state_2 = decoder_2.zero_state(n_batch, tf.float32)\
-            .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
+        state_2 = decoder_2.zero_state(n_batch, tf.float32)
+            # .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
 
         # state = encoder_states[-1]
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
