@@ -36,7 +36,7 @@ input_digits = 24 * 5
 output_digits = 24
 n_hidden = 300
 epochs = 200
-batch_size = 30
+batch_size = 10
 
 ample = 0
 # day = 'Tue'
