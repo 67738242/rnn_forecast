@@ -29,7 +29,7 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 #start = time.time()
 
-learning_rate = 0.001
+learning_rate = 0.01
 
 learning_data_day_len = 10
 input_digits = 24 * 5
@@ -265,11 +265,11 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # state = encoder_states[-1]
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
-        # なんでかスライスだけエラーなし？
         decoder_1_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, 0], [1, n_batch, n_hidden])
         decoder_2_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, n_hidden], [1, n_batch, n_hidden])
         # decoder_2_outputs = encoder_outputs[:, :, n_hidden:][-1]
         # decoder_outputs = [encoder_outputs[-1]]
+
         # 出力層の重みとバイアスを事前に定義
         V_hid_1 = weight_variable([n_hidden, n_out])
         c_hid_1 = bias_variable([n_out])
