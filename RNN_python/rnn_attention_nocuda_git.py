@@ -242,7 +242,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
 
         decoder_1 = rnn_cell.GRUCell(n_hidden, reuse = tf.AUTO_REUSE)
-        decoder_2 = rnn_cell.GRUCell(n_hidden, reuse = tf.AUTO_REUSE)
+        # decoder_2 = rnn_cell.GRUCell(n_hidden, reuse = tf.AUTO_REUSE)
 
         decoder_1= seq2seq.AttentionWrapper(decoder_1,
                                            attention_mechanism = AttentionMechanism,
@@ -250,23 +250,23 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                                            output_attention = False)
                                            # initial_cell_state = encoder_states[-1])こいつが悪い
 
-        decoder_2= seq2seq.AttentionWrapper(decoder_2,
-                                           attention_mechanism = AttentionMechanism,
-                                           attention_layer_size = 50,
-                                           output_attention = False,
-                                           name = 'att_lay_2')
+        # decoder_2= seq2seq.AttentionWrapper(decoder_2,
+        #                                    attention_mechanism = AttentionMechanism,
+        #                                    attention_layer_size = 50,
+        #                                    output_attention = False,
+        #                                    name = 'att_lay_2')
 
         state_1 = decoder_1.zero_state(n_batch, tf.float32)
             # .clone(cell_state=tf.reshape(encoder_states_fw[-1], [n_batch, n_hidden]))
 
-        state_2 = decoder_2.zero_state(n_batch, tf.float32)
+        # state_2 = decoder_2.zero_state(n_batch, tf.float32)
             # .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
 
         # state = encoder_states[-1]
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
         decoder_1_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, 0], [1, n_batch, n_hidden])
-        decoder_2_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, n_hidden], [1, n_batch, n_hidden])
+        # decoder_2_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, n_hidden], [1, n_batch, n_hidden])
         # decoder_2_outputs = encoder_outputs[:, :, n_hidden:][-1]
         # decoder_outputs = [encoder_outputs[-1]]
 
@@ -277,7 +277,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         V_hid_2 = weight_variable([n_hidden, n_out])
         c_hid_2 = bias_variable([n_out])
 
-        V_out = weight_variable([n_hidden * 2, n_out])
+        V_out = weight_variable([n_hidden, n_out])
         c_out = bias_variable([n_out])
 
         fc_outputs = []
@@ -292,38 +292,38 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             for t in range(1, output_digits):
                 if t > 1:
                     tf.get_variable_scope().reuse_variables()
-                    tf.get_variable_scope().reuse_variables()
+                    # tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
                     (output_1, state_1) = decoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
-                    (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
+                    # (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
                     out_1 = tf.matmul(decoder_1_outputs[-1], V_hid_1) + c_hid_1#to hidden layer
-                    out_2 = tf.matmul(decoder_2_outputs[-1], V_hid_2) + c_hid_2#to hidden layer
-                    fc_out = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
+                    # out_2 = tf.matmul(decoder_2_outputs[-1], V_hid_2) + c_hid_2#to hidden layer
+                    # fc_out = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
                     #forecast data
 
                     # elems = decoder_outputs[-1], V , c
                     # out = tf.map_fn(lambda x: x[0] * x[1] + x[2], elems)
                     # out = decoder_outputs
-                    fc_outputs.append(fc_out)
+                    fc_outputs.append(out_1)
                     (output_1, state_1) = decoder_1(out_1, state_1)
-                    (output_2, state_2) = decoder_2(out_2, state_2)
+                    # (output_2, state_2) = decoder_2(out_2, state_2)
 
                 # decoder_outputs.append(output)
                 decoder_1_outputs = tf.concat([decoder_1_outputs, tf.reshape(output_1, [1, n_batch, n_hidden])], axis = 0)
-                decoder_2_outputs = tf.concat([decoder_2_outputs, tf.reshape(output_2, [1, n_batch, n_hidden])], axis = 0)
+                # decoder_2_outputs = tf.concat([decoder_2_outputs, tf.reshape(output_2, [1, n_batch, n_hidden])], axis = 0)
                 # decoder_outputs = tf.concat([decoder_outputs, output], 1)
         if is_training is True:
-            output = tf.reshape(tf.concat(decoder_1_outputs, decoder_2_outputs, axis=1),
-                                [-1, output_digits, n_hidden * 2])
+            output = tf.reshape(tf.concat(decoder_1_outputs, axis=1),
+                                [-1, output_digits, n_hidden])
             with tf.name_scope('check'):
                 linear = tf.einsum('ijk,kl->ijl', output, V_out, ) + c_out
                 return linear
         else:
             # 最後の出力を求める
-            fc_out = tf.matmul(tf.concat([decoder_1_outputs[-1], decoder_2_outputs[-1]], 1), V_out) + c_out
+            fc_out = tf.matmul(tf.concat(decoder_1_outputs[-1], 1), V_out) + c_out
             fc_outputs.append(fc_out)
 
             output = tf.reshape(tf.concat(fc_outputs, axis=1),
