@@ -34,7 +34,7 @@ learning_rate = 0.01
 learning_data_day_len = 10
 input_digits = 24 * 5
 output_digits = 24
-n_hidden = 200
+n_hidden = 100
 epochs = 200
 batch_size = 30
 
