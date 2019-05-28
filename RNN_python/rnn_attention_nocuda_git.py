@@ -256,8 +256,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         #                                    output_attention = False,
         #                                    name = 'att_lay_2')
 
-        state_1 = decoder_1.zero_state(n_batch, tf.float32)
-            # .clone(cell_state=tf.reshape(encoder_states_fw[-1], [n_batch, n_hidden]))
+        state_1 = decoder_1.zero_state(n_batch, tf.float32)\
+            .clone(cell_state=encoder_states_fw)
 
         # state_2 = decoder_2.zero_state(n_batch, tf.float32)
             # .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
