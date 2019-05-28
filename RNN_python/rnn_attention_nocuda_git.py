@@ -246,7 +246,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         decoder_1= seq2seq.AttentionWrapper(decoder_1,
                                            attention_mechanism = AttentionMechanism,
-                                           attention_layer_size = 50,
+                                           attention_layer_size = 10,
                                            output_attention = False)
                                            # initial_cell_state = encoder_states[-1])こいつが悪い
 
