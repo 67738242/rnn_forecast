@@ -50,8 +50,10 @@ tf.reset_default_graph()
 
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-path_output_data = '/tmp/RNN_python/output_data_test/'
+path_output_data = '/tmp/RNN_python/attention_layer_size=' + str(attention_layer_size) + 'output_data_test/'
 LOG_DIR = '/tmp/RNN_python/rnn_log'
+
+os.mkdir(path_output_data)
 
 class TimeSeriesDataSet:
 #時系列データの時間の設定
@@ -246,7 +248,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         decoder_1= seq2seq.AttentionWrapper(decoder_1,
                                            attention_mechanism = AttentionMechanism,
-                                           attention_layer_size = 10,
+                                           attention_layer_size = 20,
                                            output_attention = False)
                                            # initial_cell_state = encoder_states[-1])こいつが悪い
 
