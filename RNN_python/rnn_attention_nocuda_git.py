@@ -37,7 +37,7 @@ output_digits = 24
 n_hidden = 100
 epochs = 200
 batch_size = 30
-
+attention_layer_size = 20
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -248,7 +248,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         decoder_1= seq2seq.AttentionWrapper(decoder_1,
                                            attention_mechanism = AttentionMechanism,
-                                           attention_layer_size = 20,
+                                           attention_layer_size = attention_layer_size,
                                            output_attention = False)
                                            # initial_cell_state = encoder_states[-1])こいつが悪い
 
