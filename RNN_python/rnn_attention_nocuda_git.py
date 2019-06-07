@@ -50,7 +50,7 @@ tf.reset_default_graph()
 
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-path_output_data = '/tmp/RNN_python/input_digits=' + str(h_hidden) + 'output_data_test/'
+path_output_data = '/tmp/RNN_python/input_digits=' + str(n_hidden) + 'output_data_test/'
 LOG_DIR = '/tmp/RNN_python/rnn_log'
 
 os.makedirs(path_output_data, exist_ok=True)
