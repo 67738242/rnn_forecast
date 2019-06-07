@@ -50,10 +50,10 @@ tf.reset_default_graph()
 
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-path_output_data = '/tmp/RNN_python/input_digits=' + str(input_digits) + 'output_data_test/'
+path_output_data = '/tmp/RNN_python/input_digits=' + str(h_hidden) + 'output_data_test/'
 LOG_DIR = '/tmp/RNN_python/rnn_log'
 
-os.mkdir(path_output_data, exist_ok=True)
+os.makedirs(path_output_data, exist_ok=True)
 
 class TimeSeriesDataSet:
 #時系列データの時間の設定
