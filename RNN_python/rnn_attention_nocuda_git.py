@@ -38,6 +38,7 @@ n_hidden = 40
 epochs = 200
 batch_size = 30
 attention_layer_size = 10
+num_units = 40
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -233,7 +234,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # Decode
 
 
-        AttentionMechanism = seq2seq.BahdanauAttention(num_units=100,
+        AttentionMechanism = seq2seq.BahdanauAttention(num_units=num_units,
                                                         memory=tf.reshape(encoder_outputs, \
                                                             [n_batch, input_digits, n_hidden * 2])
                                                         )
