@@ -9,8 +9,9 @@ from statistics import mean, median,variance,stdev
 import numpy as np
 
 persentile_num = 95
-data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
+# data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
 
+data_path = '/tmp/RNN_python/output_data_sarima/s_arima_error_p_h_data1.xlsx'
 error_p_h_data = pd.read_excel(
     data_path,
     index_col=[0,1,2],
