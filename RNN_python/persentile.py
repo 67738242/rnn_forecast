@@ -13,7 +13,7 @@ data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.x
 
 error_p_h_data = pd.read_excel(
     data_path,
-    index_col=[0,1,2,3,4],
+    index_col=[0,1,2],
     header=0
 )
 
