@@ -37,7 +37,7 @@ persentile_val = error_p_h[persentile_arr]
 # print(error_p_h_data)
 # print(persentile_val)
 # print(mape)
-print(mean(mape), variance(mape), mape[persentile_arr])
+print(mape.maen(), mape.var(), mape[persentile_arr])
 mape = np.reshape(mape, -1)
 mape_data = pd.DataFrame(mape, index=error_p_h_data.index)
 mape_data.to_excel(mape_path + 'mape.xlsx')
