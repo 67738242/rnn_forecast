@@ -10,7 +10,9 @@ learning_length = 10*24
 persentile_num = 95
 error_data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
 mape=[]
-mape_path = os.makedirs('./mape/')
+mape_path = './mape/'
+os.makedirs(mape_path)
+
 # error_data_path = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data1.xlsx'
 error_p_h_data = pd.read_excel(
     error_data_path,
@@ -32,9 +34,9 @@ error_p_h = sorted(np.reshape(error_p_h, -1))
 # print(error_p_h_data)
 persentile_arr = round(length * persentile_num/100)
 persentile_val = error_p_h[persentile_arr]
-print(error_p_h_data)
-print(persentile_val)
-print(mape)
+# print(error_p_h_data)
+# print(persentile_val)
+# print(mape)
 
 mape = np.reshape(mape, -1)
 mape_data = pd.DataFrame(mape, index=error_p_h_data.index)
