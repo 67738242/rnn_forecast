@@ -8,12 +8,12 @@ import numpy as np
 
 learning_length = 10*24
 persentile_num = 95
-# error_data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
+error_data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
 mape=[]
-mape_path = '/tmp/RNN_python/mape/'
+# mape_path = '/tmp/RNN_python/mape/'
 os.makedirs(mape_path, exist_ok=True)
 
-error_data_path = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data1.xlsx'
+# error_data_path = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data1.xlsx'
 error_p_h_data = pd.read_excel(
     error_data_path,
     index_col=[0,1,2],
