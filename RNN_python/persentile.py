@@ -25,12 +25,13 @@ eval_data_set_kari = hlt.eval_series_data()
 eval_data_set = eval_data_set_kari[learning_length:]
 real_num = eval_data_set.values
 
-error_p_h = error_p_h_data.values
+error_p_h = abs(error_p_h_data.values)
 length = len(error_p_h_data)
 
 for i in range(len(error_p_h_data)):
     mape.append(error_p_h[i]/real_num[i])
-# error_p_h_data = sorted(error_p_h_data.abs_num.values)
+
+error_p_h_data = sorted(error_p_h)
 # print(error_p_h_data)
 persentile_arr = round(length * persentile_num/100)
 persentile_val = error_p_h[persentile_arr]
