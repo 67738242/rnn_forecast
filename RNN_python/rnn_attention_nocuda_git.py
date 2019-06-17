@@ -31,14 +31,14 @@ from sklearn.model_selection import train_test_split
 
 learning_rate = 0.01
 # when attention,learning_rate must be 0.001
-learning_data_day_len = 10
-input_digits = 24 * 3
+learning_data_day_len = 30
+input_digits = 24 * 10
 output_digits = 24
 n_hidden = 40
 epochs = 200
 batch_size = 30
 attention_layer_size = 10
-num_units = 100
+num_units = 50
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -51,7 +51,8 @@ tf.reset_default_graph()
 
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-path_output_data = '/tmp/RNN_python/input_digits=' + str(n_hidden) + 'output_data_test/'
+path_output_data = '/tmp/RNN_python/learning_length=' + str(learning_data_day_len) + \
+    'num_units' + str(num_units)+'output_data_test/'
 LOG_DIR = '/tmp/RNN_python/rnn_log'
 
 os.makedirs(path_output_data, exist_ok=True)
