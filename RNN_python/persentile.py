@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import holitest as hlt
 import openpyxl
 import statsmodels.api as sm
 import os
@@ -8,21 +9,30 @@ import scipy.io.wavfile as scw
 from statistics import mean, median,variance,stdev
 import numpy as np
 
+learning_length = 10*24
 persentile_num = 95
-# data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
+error_data_path = '/tmp/RNN_python/input_digits=40output_data_test/seq2seq_error_p_h.xlsx'
+mape=[]
 
-data_path = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data1.xlsx'
+# error_data_path = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data1.xlsx'
 error_p_h_data = pd.read_excel(
-    data_path,
+    error_data_path,
     index_col=[0,1,2],
     header=0
 )
 
+eval_data_set_kari = hlt.eval_series_data()
+eval_data_set = eval_data_set_kari[learning_length:]
+real_num = eval_data_set.values
+
+error_p_h = error_p_h_data.values
 length = len(error_p_h_data)
 
-error_p_h_data = sorted(error_p_h_data.abs_num.values)
-print(error_p_h_data)
+for i in range(len(error_p_h_data)):
+    mape.append(error_p_h[i]/real_num[i])
+# error_p_h_data = sorted(error_p_h_data.abs_num.values)
+# print(error_p_h_data)
 persentile_arr = round(length * persentile_num/100)
-
 persentile_val = error_p_h_data[persentile_arr]
 print(persentile_val)
+print(mape)

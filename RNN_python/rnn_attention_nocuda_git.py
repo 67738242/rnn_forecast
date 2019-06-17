@@ -38,7 +38,7 @@ n_hidden = 40
 epochs = 200
 batch_size = 30
 attention_layer_size = 10
-num_units = 40
+num_units = 100
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -450,21 +450,21 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     fc_output = std_output * fc_input_std + fc_input_mean
     fc_seq = fc_output.reshape(-2)
-    print(fc_seq)
+    # print(fc_seq)
     rnn_np_p_data_sr = np.append(rnn_np_p_data_sr, fc_seq.reshape(-1), axis = 0)
 
     dataframe_2_ = eval_data_set[(learning_data_day_len + k) * 24: \
         (learning_data_day_len + k) * 24 + 24]
     day_d = dataframe_2_.values.reshape(-1)
-    print(day_d)
+    # print(day_d)
 
     if len(day_d) != 24:
         break
 
     series_error.append(fc_seq - day_d)
-    print(series_error)
+    # print(series_error)
     gauss_error.append(np.prod(normdist(np.reshape(series_error[k], -1),0,50)))
-    print(gauss_error)
+    # print(gauss_error)
     log_gauss_error.append(np.log10(gauss_error[k]))
 
     day_mape = mape_evaluation(fc_seq, day_d)
