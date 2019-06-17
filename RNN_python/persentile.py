@@ -33,6 +33,6 @@ for i in range(len(error_p_h_data)):
 # error_p_h_data = sorted(error_p_h_data.abs_num.values)
 # print(error_p_h_data)
 persentile_arr = round(length * persentile_num/100)
-persentile_val = error_p_h_data[persentile_arr]
+persentile_val = error_p_h[persentile_arr]
 print(persentile_val)
 print(mape)
