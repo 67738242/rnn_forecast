@@ -38,6 +38,7 @@ persentile_val = error_p_h[persentile_arr]
 # print(persentile_val)
 # print(mape)
 mape = np.array(mape)
+mape = np.reshape(mape, -1)
 sort_mape = sorted(mape)
 print(mape.mean(), mape.var(), sort_mape[persentile_arr])
 mape = np.reshape(mape, -1)
