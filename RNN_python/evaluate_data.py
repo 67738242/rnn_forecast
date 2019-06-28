@@ -4,13 +4,15 @@ import holitest as hlt
 import numpy as np
 
 rnn_path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-rnn_path_output_data = '/tmp/RNN_python/output_data_test/'
+# rnn_path_output_data = '/tmp/RNN_python/output_data_test/'
+rnn_path_output_data = '/tmp/RNN_python/learning_length=10num_units50output_data_test/'
 
 sarima_path_fig = '/tmp/RNN_python/figures_sarima/'
 sarima_path_output_data = '/tmp/RNN_python/output_data_sarima/'
 
-path_output_data = '/tmp/RNN_python/evaluate_data/'
+path_output_data = '/tmp/RNN_python/evaluate_data1/'
 
+os.makedirs(rnn_path_output_data, exist_ok=True)
 eval_data_set_kari = hlt.eval_series_data()
 eval_data_set = eval_data_set_kari#[:700]
 
