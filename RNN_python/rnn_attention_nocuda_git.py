@@ -389,47 +389,49 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     # print('input_data_train = ', input_data_train[1:4])
     # print(len(input_data_train[0]))
-    for epoch in range(epochs):
-        X_, Y_ = shuffle(input_data_train, true_data_train)
+    for nolma in range(10):
+        for epoch in range(epochs):
+            X_, Y_ = shuffle(input_data_train, true_data_train)
 
-        with tf.name_scope('train'):
-            for h in range(n_batches):
-                start = h * batch_size
-                end = start + batch_size
-                # print('begin learning')
-                # print(y)
-                # t = Y_[start:end]
-                # y = inference(X_[start:end], Y_[start:end], batch_size, True,
-                #               input_digits=input_digits,
-                #               output_digits=output_digits,
-                #               n_hidden=n_hidden, n_out=n_out)
-                # loss = loss(y, t)
-                #
-                # train_step(loss, learning_rate)
-                sess.run(train_step, feed_dict={
-                    x: X_[start:end],
-                    t: Y_[start:end],
-                    n_batch: batch_size,
-                    is_training: True
-                })
+            with tf.name_scope('train'):
+                for h in range(n_batches):
+                    start = h * batch_size
+                    end = start + batch_size
+                    # print('begin learning')
+                    # print(y)
+                    # t = Y_[start:end]
+                    # y = inference(X_[start:end], Y_[start:end], batch_size, True,
+                    #               input_digits=input_digits,
+                    #               output_digits=output_digits,
+                    #               n_hidden=n_hidden, n_out=n_out)
+                    # loss = loss(y, t)
+                    #
+                    # train_step(loss, learning_rate)
+                    sess.run(train_step, feed_dict={
+                        x: X_[start:end],
+                        t: Y_[start:end],
+                        n_batch: batch_size,
+                        is_training: True
+                    })
 
-        val_loss = loss.eval(session=sess, feed_dict={
-            x: input_data_validation,
-            t: true_data_validation,
-            n_batch: N_validation,
-            is_training: False
-        })
+            val_loss = loss.eval(session=sess, feed_dict={
+                x: input_data_validation,
+                t: true_data_validation,
+                n_batch: N_validation,
+                is_training: False
+            })
 
-        #mean_val, var_val = tf.nn.moments(X_validation, [0, 1])
-        #std_val_loss = val_loss * tf.sqrt(var_val) + mean_val
-        #std_val_loss = val_loss / train_std**2
+            #mean_val, var_val = tf.nn.moments(X_validation, [0, 1])
+            #std_val_loss = val_loss * tf.sqrt(var_val) + mean_val
+            #std_val_loss = val_loss / train_std**2
 
-        history['val_loss'].append(val_loss)
-        print('epoch:', epoch,
-              ' validation loss:', val_loss)
+            history['val_loss'].append(val_loss)
+            print('epoch:', epoch,
+                  ' validation loss:', val_loss)
 
         # if early_stopping.validate(val_loss):
-        #    break
+        if val_loss < 0.1:
+            break
 
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
