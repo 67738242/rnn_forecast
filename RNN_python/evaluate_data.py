@@ -13,7 +13,7 @@ sarima_path_output_data = '/tmp/RNN_python/output_data_sarima/'
 
 path_output_data = '/tmp/RNN_python/evaluate_data1/'
 
-os.makedirs(rnn_path_output_data, exist_ok=True)
+os.makedirs(path_output_data, exist_ok=True)
 eval_data_set_kari = hlt.eval_series_data()
 eval_data_set = eval_data_set_kari#[:700]
 
