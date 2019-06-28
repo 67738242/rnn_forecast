@@ -29,10 +29,10 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 #start = time.time()
 
-learning_rate = 0.01
+learning_rate = 0.001
 # when attention,learning_rate must be 0.001
-learning_data_day_len = 30
-input_digits = 24 * 10
+learning_data_day_len = 5
+input_digits = 24 * 3
 output_digits = 24
 n_hidden = 40
 epochs = 100
@@ -205,6 +205,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         encoder_forward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
         encoder_backward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
+
+        # encoder_forward = rnn_cell.MultiRNNCell(encoder_forward for n in )
         encoder_outputs = []
         encoder_states = []
 
