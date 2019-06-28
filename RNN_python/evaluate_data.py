@@ -2,6 +2,7 @@ import pandas as pd
 import openpyxl
 import holitest as hlt
 import numpy as np
+import os
 
 rnn_path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 # rnn_path_output_data = '/tmp/RNN_python/output_data_test/'
