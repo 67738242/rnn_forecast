@@ -432,6 +432,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # if early_stopping.validate(val_loss):
         if val_loss < 0.1:
             break
+        else:
+            tf.reset_default_graph()
 
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
