@@ -7,8 +7,8 @@ import os
 from statistics import mean, median,variance,stdev
 import numpy as np
 
-path_error = '/tmp/RNN_python/learning_length=10num_units50output_data_test/seq2seq_error_p_h.xlsx'
-
+# path_error = '/tmp/RNN_python/learning_length=10num_units50output_data_test/seq2seq_error_p_h.xlsx'
+path_error = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data.xlsx'
 
 error_p_h_data = pd.read_excel(
     path_error,
@@ -26,4 +26,5 @@ for i in range(len(error_p_h)):
 print(lkhd)
 
 lkhd_data= pd.DataFrame(lkhd)
-lkhd_data.to_excel('/tmp/RNN_python/evaluate_data1/lkhd_p_h_50.xlsx')
+# lkhd_data.to_excel('/tmp/RNN_python/evaluate_data1/lkhd_p_h_50.xlsx')
+lkhd_data.to_excel('/tmp/RNN_python/evaluate_data1/lkhd_p_h_sarima.xlsx')
