@@ -13,7 +13,8 @@ path_error = '/tmp/RNN_python/output_data_sarima/s_arima_err_p_h_data.xlsx'
 error_p_h_data = pd.read_excel(
     path_error,
     header=0,
-    index_col=[0,1,2]
+    # index_col=[0,1,2]
+    index_col=0
 )
 
 error_p_h = error_p_h_data.values.reshape(-1)
