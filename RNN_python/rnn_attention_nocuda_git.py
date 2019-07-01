@@ -170,6 +170,7 @@ gauss_error = []
 log_gauss_error = []
 rnn_day_series_mape = []
 p_data_sr = []
+fin_val_loss = []
 rnn_np_p_data_sr = np.empty(0, int)
 an_d = 1
 check = 0
@@ -435,6 +436,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         else:
             tf.reset_default_graph()
 
+    fin_val_loss = np.append(fin_val_loss, val_loss)
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
     for l in range(input_digits)]
@@ -513,8 +515,10 @@ predicted_traffic_data = pd.DataFrame(rnn_np_p_data_sr, \
 predicted_traffic_data.to_excel(path_output_data + 'seq2seq_predict.xlsx')
 
 log_gauss_error_data = pd.DataFrame(log_gauss_error)
+fin_val_loss_data = pd.DataFrame(fin_val_loss)
 
 log_gauss_error_data.to_excel(path_output_data + 'seq2seq_error_gauss.xlsx')
+fin_val_loss_data.to_excel(path_output_data + 'att_loss.xlsx')
 
 series_error_data = pd.DataFrame(np.reshape(series_error, -1), \
     columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
