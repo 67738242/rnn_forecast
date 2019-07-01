@@ -21,9 +21,9 @@ error_p_h = error_p_h_data.values.reshape(-1)
 lkhd = []
 
 for i in range(len(error_p_h)):
-    lkhd.append(norm.pdf(error_p_h[i], loc = 0, scale = 30))
+    lkhd.append(norm.pdf(error_p_h[i], loc = 0, scale = 50))
 
 print(lkhd)
 
 lkhd_data= pd.DataFrame(lkhd)
-lkhd_data.to_csv('/tmp/RNN_python/evaluate_data1/lkhd_p_h.csv')
+lkhd_data.to_excel('/tmp/RNN_python/evaluate_data1/lkhd_p_h_50.xlsx')
