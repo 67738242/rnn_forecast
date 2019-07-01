@@ -7,8 +7,7 @@ import os
 from statistics import mean, median,variance,stdev
 import numpy as np
 
-path_error = '/tmp/RNN_python/learning_length=10num_units50output_data_test/\
-    seq2seq_error_p_h.xlsx'
+path_error = '/tmp/RNN_python/learning_length=10num_units50output_data_test/seq2seq_error_p_h.xlsx'
 
 
 error_p_h_data = pd.read_excel(
