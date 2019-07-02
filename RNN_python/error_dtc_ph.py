@@ -23,7 +23,7 @@ error_index = np.where(error_ph_log < -5)
 print(error_index)
 # print(error_index[3])
 
-error_hour = eval_data_set.iloc[error_index]
+error_hour = eval_data_set.iloc[error_index[0]]
 print(error_hour)
 
 error_hour.to_excel('/tmp/RNN_python/evaluate_data1/attention_errorh.xlsx')
