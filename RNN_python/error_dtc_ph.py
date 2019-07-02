@@ -9,7 +9,8 @@ import numpy as np
 eval_data_set = hlt.eval_series_data()
 
 error_ph_data = pd.read_excel(
-    '/tmp/RNN_python/evaluate_data1/lkhd_p_h.xlsx',
+    # '/tmp/RNN_python/evaluate_data1/lkhd_p_h.xlsx',
+    '/tmp/RNN_python/evaluate_data1/lkhd_p_h_sarima.xlsx',
     header=0,
     index_col=0
     )
@@ -26,4 +27,5 @@ print(error_index)
 error_hour = eval_data_set.iloc[error_index[0]]
 print(error_hour)
 
-error_hour.to_excel('/tmp/RNN_python/evaluate_data1/attention_errorh.xlsx')
+# error_hour.to_excel('/tmp/RNN_python/evaluate_data1/attention_errorh.xlsx')
+error_hour.to_excel('/tmp/RNN_python/evaluate_data1/sarima_errorh.xlsx')
