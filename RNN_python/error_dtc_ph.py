@@ -6,7 +6,7 @@ import os
 from statistics import mean, median,variance,stdev
 import numpy as np
 
-eval_data_set_kari = hlt.eval_series_data()
+eval_data_set = hlt.eval_series_data()
 
 error_ph_data = pd.read_excel(
     '/tmp/RNN_python/evaluate_data1/lkhd_p_h.xlsx',
@@ -17,6 +17,13 @@ error_ph_data = pd.read_excel(
 error_ph = error_ph_data.values
 
 error_ph_log = np.log10(error_ph)
+# print(error_ph_log)
 
 error_index = np.where(error_ph_log < -5)
 print(error_index)
+# print(error_index[3])
+
+error_hour = eval_data_set.iloc[error_index]
+print(error_hour)
+
+error_hour.to_excel('/tmp/RNN_python/evaluate_data1/attention_errorh.xlsx')
