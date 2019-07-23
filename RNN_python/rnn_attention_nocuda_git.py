@@ -209,6 +209,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 # by error ''Tensor' object does not support item assignment'
                 # xを[,,0]と[,,1]に分割[,,1]は正規化したくないのであとで繋げる
                 x_0 = (x[:, :, 0] - mean) / tf.sqrt(var + eps)
+                x_0 = tf.reshape(x_0, [n_batch, input_digits, 1])
                 x_1 = tf.slice(x, [0, 0, 0], [n_batch, input_digits, 1])
                 nom_x = tf.concat([x_0, x_1], axis=2)
                 # print(nom_batch[0], len(nom_batch[0]))
