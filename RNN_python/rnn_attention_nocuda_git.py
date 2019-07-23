@@ -158,6 +158,7 @@ eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
     output_digits=output_digits, ample = ample)
+print(eval_X, eval_Y)
 
 n_in = len(eval_X[0][0])
 n_out = len(eval_Y[0][0])
