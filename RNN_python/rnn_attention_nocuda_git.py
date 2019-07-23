@@ -87,7 +87,7 @@ class TimeSeriesDataSet:
         for i in range(0, n_index):
 
             data.append(noise_value[i: i + input_digits])
-            target.append(spy.zscore(value[i+input_digits: i+input_digits+output_digits]))
+            target.append(value[i+input_digits: i+input_digits+output_digits]))
 
         X = np.stack(data)
         std_Y = np.stack(target)
@@ -204,11 +204,12 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 eps = 1e-8
                 # beta = tf.Variable(tf.zeros(shape))
                 # gamma = tf.Variable(tf.ones(shape))
-                mean, var = tf.nn.moments(x, [0, 1])
+                # mean, var = tf.nn.moments(x, [0, 1])
+                mean, var = tf.nn.moments(x[:, :, 0], [0, 1])
                 # nom_batch = gamma * (x - mean) / tf.sqrt(var + eps) + beta
-                nom_batch = (x - mean) / tf.sqrt(var + eps)
+                x[:, :, 0] = (x[:, :, 0] - mean) / tf.sqrt(var + eps)
                 # print(nom_batch[0], len(nom_batch[0]))
-                return nom_batch
+                return x
 
         encoder_forward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
         encoder_backward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
