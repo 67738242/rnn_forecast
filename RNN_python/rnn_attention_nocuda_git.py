@@ -206,9 +206,13 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 # mean, var = tf.nn.moments(x, [0, 1])
                 mean, var = tf.nn.moments(x[:, :, 0], [0, 1])
                 # nom_batch = gamma * (x - mean) / tf.sqrt(var + eps) + beta
-                x[:, :, 0] = (x[:, :, 0] - mean) / tf.sqrt(var + eps)
+                # by error ''Tensor' object does not support item assignment'
+                # xを[,,0]と[,,1]に分割[,,1]は正規化したくないのであとで繋げる
+                x_0 = (x[:, :, 0] - mean) / tf.sqrt(var + eps)
+                x_1 = tf.slice(x, [0, 0, 0], [n_batch, input_digits, 1])
+                nom_x = tf.concat([x_0, x_1], axis=2)
                 # print(nom_batch[0], len(nom_batch[0]))
-                return x
+                return nom_x
 
         encoder_forward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
         encoder_backward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
