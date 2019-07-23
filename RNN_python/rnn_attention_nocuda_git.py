@@ -31,8 +31,8 @@ from sklearn.model_selection import train_test_split
 
 learning_rate = 0.01
 # when attention,learning_rate must be 0.001
-learning_data_day_len = 10
-input_digits = 24 * 3
+learning_data_day_len = 21
+input_digits = 24 * 7
 output_digits = 24
 n_hidden = 40
 epochs = 150
@@ -346,7 +346,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     def loss(y, t):
         with tf.name_scope('loss'):
-            mse = tf.reduce_mean(tf.square(y - t), axis = [1, 0])
+            mse = tf.reduce_mean(tf.square(y - t), axis = [2, 1, 0])
             # mse = tf.reduce_mean(tf.square(y - t), [1, 0])
             return mse
 
