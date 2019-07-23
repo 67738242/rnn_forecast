@@ -49,6 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
+input_data_path = '/tmp/RNN_python/series_data/dev_xlsx'
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/learning_length=' + str(learning_data_day_len) + \
@@ -147,8 +148,12 @@ def normdist(x,mu,sigma):
     return np.array([norm.pdf(x = x[i], loc = mu, scale = sigma) for i in range(len(x)) ])
 
 
-eval_data_set_kari = hlt.eval_series_data()
-eval_data_set = eval_data_set_kari
+# eval_data_set_kari = hlt.eval_series_data()
+eval_data_set = pd.read_excel(
+    input_data_path,
+    index_col=[0, 1, 2]
+)
+
 eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
@@ -239,13 +244,14 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
 
         AttentionMechanism = seq2seq.BahdanauAttention(num_units=num_units,
-                                                        memory=tf.transpose(encoder_outputs, [1, 0, 2])
+                                                        memory=tf.transpose(encoder_outputs, [1, 0, 2]),
+                                                        memory_sequence_length = n_in
                                                         # memory=tf.reshape(encoder_outputs, \
                                                         #     [n_batch, input_digits, n_hidden * 2])
                                                         )
                                                         # when use bidirectional, n_hidden * 2
                                                         # tf.reshape(encoder_outputs, n_batch, input_digits, ),
-                                                        # memory_sequence_length = input_digits)
+
                                                         # normalize=True)
 
 
@@ -282,8 +288,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         V_hid_1 = weight_variable([n_hidden, n_out])
         c_hid_1 = bias_variable([n_out])
 
-        V_hid_2 = weight_variable([n_hidden, n_out])
-        c_hid_2 = bias_variable([n_out])
+        # V_hid_2 = weight_variable([n_hidden, n_out])
+        # c_hid_2 = bias_variable([n_out])
 
         V_out = weight_variable([n_hidden, n_out])
         c_out = bias_variable([n_out])
