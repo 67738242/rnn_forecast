@@ -34,11 +34,11 @@ learning_rate = 0.01
 learning_data_day_len = 21
 input_digits = 24 * 7
 output_digits = 24
-n_hidden = 40
+n_hidden = 100
 epochs = 150
 batch_size = 30
 attention_layer_size = 10
-num_units = 50
+num_units = 100
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -157,7 +157,6 @@ eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
     output_digits=output_digits, ample = ample)
-print(eval_X, eval_Y)
 
 n_in = len(eval_X[0][0])
 n_out = len(eval_Y[0][0])
