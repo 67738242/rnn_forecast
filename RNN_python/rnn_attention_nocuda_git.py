@@ -244,8 +244,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
 
         AttentionMechanism = seq2seq.BahdanauAttention(num_units=num_units,
-                                                        memory=tf.transpose(encoder_outputs, [1, 0, 2]),
-                                                        memory_sequence_length = n_in
+                                                        memory=tf.transpose(encoder_outputs, [1, 0, 2])
+                                                        # memory_sequence_length = n_in
                                                         # memory=tf.reshape(encoder_outputs, \
                                                         #     [n_batch, input_digits, n_hidden * 2])
                                                         )
