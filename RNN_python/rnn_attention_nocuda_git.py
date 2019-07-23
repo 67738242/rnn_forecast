@@ -49,7 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
-input_data_path = '/tmp/RNN_python/series_data/dev_xlsx'
+input_data_path = '/tmp/RNN_python/series_data/dev_num.xlsx'
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/learning_length=' + str(learning_data_day_len) + \
