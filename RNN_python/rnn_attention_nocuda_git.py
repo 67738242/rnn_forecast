@@ -86,7 +86,7 @@ class TimeSeriesDataSet:
         for i in range(0, n_index):
 
             data.append(noise_value[i: i + input_digits])
-            target.append(value[i+input_digits: i+input_digits+output_digits]))
+            target.append(value[i+input_digits: i+input_digits+output_digits])
 
         X = np.stack(data)
         std_Y = np.stack(target)
