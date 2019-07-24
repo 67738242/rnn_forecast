@@ -394,8 +394,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     }
 
     input_data = eval_X[k * 24: (k + learning_data_day_len - 1) * 24]
-    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24, :, 0:]
-
+    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24, :, 0:1]
+    print(true_data)
     # print(input_data[:3])
     input_data_train, input_data_validation, true_data_train, \
         true_data_validation = train_test_split(input_data, true_data, \
