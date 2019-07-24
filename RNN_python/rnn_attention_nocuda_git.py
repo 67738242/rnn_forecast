@@ -202,15 +202,15 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 eps = 1e-8
                 # beta = tf.Variable(tf.zeros(shape))
                 # gamma = tf.Variable(tf.ones(shape))
-                # mean, var = tf.nn.moments(x, [0, 1])
-                mean, var = tf.nn.moments(x[:, :, 0], [0, 1])
-                # nom_batch = gamma * (x - mean) / tf.sqrt(var + eps) + beta
+                mean, var = tf.nn.moments(x, [0, 1])
+                # mean, var = tf.nn.moments(x[:, :, 0], [0, 1])
                 # by error ''Tensor' object does not support item assignment'
                 # xを[,,0]と[,,1]に分割[,,1]は正規化したくないのであとで繋げる
-                x_0 = (x[:, :, 0] - mean) / tf.sqrt(var + eps)
-                x_0 = tf.reshape(x_0, [n_batch, input_digits, 1])
-                x_1 = tf.slice(x, [0, 0, 0], [n_batch, input_digits, 1])
-                nom_x = tf.concat([x_0, x_1], axis=2)
+                # x_0 = (x[:, :, 0] - mean) / tf.sqrt(var + eps)
+                # x_0 = tf.reshape(x_0, [n_batch, input_digits, 1])
+                # x_1 = tf.slice(x, [0, 0, 0], [n_batch, input_digits, 1])
+                # nom_x = tf.concat([x_0, x_1], axis=2)
+                nom_x = (x - mean)/tf.sqrt(var + eps)
                 # print(nom_batch[0], len(nom_batch[0]))
                 return nom_x
 
@@ -350,10 +350,11 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             return output
 
     def loss(y, t):
+        t_mean, t_vari = tf.nn.moments(t, [0, 1])
+        t_nom = t - t_mean/tf.sqrt(t_vari + 1e+8)
+
         with tf.name_scope('loss'):
-            mse = tf.reduce_mean(tf.square(y - \
-                tf.nn.batch_normalization(t,
-                    )), axis = [2, 1, 0])
+            mse = tf.reduce_mean(tf.square(y - t_nom), axis = [1, 0])
             # mse = tf.reduce_mean(tf.square(y - t), [1, 0])
             return mse
 
@@ -393,7 +394,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     }
 
     input_data = eval_X[k * 24: (k + learning_data_day_len - 1) * 24]
-    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24]
+    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24, :, 0:]
 
     # print(input_data[:3])
     input_data_train, input_data_validation, true_data_train, \
