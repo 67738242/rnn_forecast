@@ -159,7 +159,8 @@ eval_series_length = eval_data_set_inst.series_length
     output_digits=output_digits, ample = ample)
 
 n_in = len(eval_X[0][0])
-n_out = len(eval_Y[0][0])
+# n_out = len(eval_Y[0][0])
+n_out = 1
 
 N_train = int((learning_data_day_len * 24 - (input_digits + output_digits))* 0.95)
 N_validation = (learning_data_day_len * 24- (input_digits + output_digits)) - N_train
@@ -351,7 +352,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     def loss(y, t):
         t_mean, t_vari = tf.nn.moments(t, [0, 1])
-        t_nom = t - t_mean/tf.sqrt(t_vari + 1e+8)
+        t_nom = (t - t_mean)/tf.sqrt(t_vari + 1e+8)
 
         with tf.name_scope('loss'):
             mse = tf.reduce_mean(tf.square(y - t_nom), axis = [1, 0])
@@ -459,7 +460,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     fc_input = eval_X[learning_data_day_len * 24 - (input_digits - k * 24)].reshape(1, input_digits, n_in)
     std_fc_input = spy.zscore(fc_input, axis = 1)
 
-    z_ = std_fc_input.reshape(1, input_digits, 1)
+    z_ = std_fc_input.reshape(1, input_digits, n_in)
 
     std_output = y.eval(session=sess, feed_dict={
         x: z_,
@@ -469,8 +470,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     tf.reset_default_graph()
 
-    fc_input_mean = fc_input.mean(axis=1, keepdims=True)
-    fc_input_std = fc_input.std(axis=1, keepdims=True)
+    fc_input_mean = fc_input[:,:,0:1].mean(axis=1, keepdims=True)
+    fc_input_std = fc_input[:,:,0:1].std(axis=1, keepdims=True)
 
     fc_output = std_output * fc_input_std + fc_input_mean
     fc_seq = fc_output.reshape(-2)
@@ -523,9 +524,9 @@ anom_day_fig.savefig(path_fig + 'rnn_seq2seq_lkhd_anormal_day.eps', dpi=250)
 #     columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
 #     index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].index)
 
-predicted_traffic_data = pd.DataFrame(rnn_np_p_data_sr, \
-    columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
-    index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].index)
+predicted_traffic_data = pd.DataFrame(rnn_np_p_data_sr)
+    # columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns)
+    # index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].number.index)
 
 predicted_traffic_data.to_excel(path_output_data + 'seq2seq_predict.xlsx')
 
@@ -535,9 +536,9 @@ fin_val_loss_data = pd.DataFrame(fin_val_loss)
 log_gauss_error_data.to_excel(path_output_data + 'seq2seq_error_gauss.xlsx')
 fin_val_loss_data.to_excel(path_output_data + 'att_loss.xlsx')
 
-series_error_data = pd.DataFrame(np.reshape(series_error, -1), \
-    columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
-    index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].index)
+series_error_data = pd.DataFrame(np.reshape(series_error, -1))
+    # columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns)
+    # index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].number.index)
 
 series_error_data.to_excel(path_output_data + 'seq2seq_error_p_h.xlsx')
 
