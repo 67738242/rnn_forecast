@@ -453,7 +453,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     predicted_traffic = [[None] * len(eval_data_set.columns) \
     for l in range(input_digits)]
 
-    fc_input = eval_X[learning_data_day_len * 24 - (input_digits - k * 24)].reshape(1, input_digits, 1)
+    fc_input = eval_X[learning_data_day_len * 24 - (input_digits - k * 24)].reshape(1, input_digits, n_in)
     std_fc_input = spy.zscore(fc_input, axis = 1)
 
     z_ = std_fc_input.reshape(1, input_digits, 1)
