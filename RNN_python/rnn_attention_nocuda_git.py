@@ -446,10 +446,10 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                   ' validation loss:', val_loss)
 
         # if early_stopping.validate(val_loss):
-        if val_loss < 0.1:
-            break
-        else:
-            tf.reset_default_graph()
+        # if val_loss < 0.1:
+        #    break
+        #else:
+         #   tf.reset_default_graph()
 
     fin_val_loss = np.append(fin_val_loss, val_loss)
     #forcasting
