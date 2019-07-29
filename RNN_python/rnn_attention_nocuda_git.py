@@ -31,14 +31,14 @@ from sklearn.model_selection import train_test_split
 
 learning_rate = 0.01
 # when attention,learning_rate must be 0.001
-learning_data_day_len = 21
+learning_data_day_len = 28
 input_digits = 24 * 7
 output_digits = 24
-n_hidden = 100
-epochs = 150
-batch_size = 30
-attention_layer_size = 10
-num_units = 100
+n_hidden = 1000
+epochs = 500
+batch_size = 70
+attention_layer_size = 40
+num_units = 1000
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -396,7 +396,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     input_data = eval_X[k * 24: (k + learning_data_day_len - 1) * 24]
     true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24, :, 0:1]
-    print(true_data)
+
     # print(input_data[:3])
     input_data_train, input_data_validation, true_data_train, \
         true_data_validation = train_test_split(input_data, true_data, \
@@ -409,7 +409,6 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     for nolma in range(10):
         for epoch in range(epochs):
             X_, Y_ = shuffle(input_data_train, true_data_train)
-
             with tf.name_scope('train'):
                 for h in range(n_batches):
                     start = h * batch_size
@@ -459,9 +458,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     fc_input = eval_X[learning_data_day_len * 24 - (input_digits - k * 24)].reshape(1, input_digits, n_in)
     std_fc_input = spy.zscore(fc_input, axis = 1)
-
     z_ = std_fc_input.reshape(1, input_digits, n_in)
-
+    
     std_output = y.eval(session=sess, feed_dict={
         x: z_,
         n_batch: 1,
@@ -475,16 +473,17 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     fc_output = std_output * fc_input_std + fc_input_mean
     fc_seq = fc_output.reshape(-2)
-    # print(fc_seq)
+    print('fc_seq=', fc_seq)
     rnn_np_p_data_sr = np.append(rnn_np_p_data_sr, fc_seq.reshape(-1), axis = 0)
 
     dataframe_2_ = eval_data_set[(learning_data_day_len + k) * 24: \
         (learning_data_day_len + k) * 24 + 24]
-    day_d = dataframe_2_.values.reshape(-1)
-    # print(day_d)
-
-    if len(day_d) != 24:
-        break
+    # day_d = dataframe_2_.values.reshape(-1)
+    day_d = dataframe_2_.values[:, 0]
+    print('day=', day_d)
+    print(day_d[0])
+   # if len(day_d) != 24:
+   #     break
 
     series_error.append(fc_seq - day_d)
     # print(series_error)
@@ -495,27 +494,6 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     day_mape = mape_evaluation(fc_seq, day_d)
     rnn_day_series_mape.append(day_mape)
     print(log_gauss_error[k])
-
-    if log_gauss_error[k] < -thrd and an_d < 16:
-        day_predicted_traffic = pd.DataFrame(fc_seq, \
-            columns = dataframe_2_.columns, index = dataframe_2_.index)
-        day_real_traffic = pd.DataFrame(day_d,\
-            columns = dataframe_2_.columns, index = dataframe_2_.index)
-        with pd.ExcelWriter(path_output_data + 'anom_data' + str(an_d) + '.xlsx') as writer:
-            day_predicted_traffic.to_excel(writer, sheet_name = 'predict')
-            day_real_traffic.to_excel(writer, sheet_name = 'real')
-        print('likelihood_anormal :' , dataframe_2_[0: 1])
-        fig_name = str(dataframe_2_[0:1].index.values[0])
-        name = fig_name[7: 13] + fig_name[25:39]
-
-        day_ax = anom_day_fig.add_subplot(7, 3, an_d) #sharex=True, sharey=True)
-        # sarima = day_ax.plot(sarima_p_data_sr[learning_data_day_len - input_len // 24 + k]\
-            # , 'r', label = 'SARIMA')
-        rnn = day_ax.plot(fc_seq, label = 'RNN')
-        real = day_ax.plot(day_d,label = 'real', linestyle = 'dotted')
-        day_ax.legend()
-        day_ax.set_title(name)
-        an_d += 1
 
 # plt.savefig(path_fig + 'anormal_day_' + str(an_d) + '_' + str(input_digits) +'.eps')
 anom_day_fig.savefig(path_fig + 'rnn_seq2seq_lkhd_anormal_day.eps', dpi=250)
