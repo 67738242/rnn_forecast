@@ -39,7 +39,7 @@ epochs = 200
 batch_size = 60
 attention_layer_size = 5
 num_units = 10
-ample = 0
+ample = 0.3
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
@@ -49,7 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
-input_data_path = '/tmp/RNN_python/series_data/dev_num_bin.xlsx'
+input_data_path = '/tmp/RNN_python/series_data/dev_num_0_100.xlsx'
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/2dim_att/'
@@ -333,7 +333,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     # (output_2, state_2) = decoder_2(out_2, state_2)
 
                 # decoder_outputs.append(output)
-                decoder_1_outputs = tf.concat([decoder_1_outputs, tf.reshape(output_1, [1, n_batch, n_hidden])], axis = 0)
+                decoder_1_outputs = tf.concat([decoder_1_outputs, tf.reshape(output_1, [n_out, n_batch, n_hidden])], axis = 0)
                 # decoder_2_outputs = tf.concat([decoder_2_outputs, tf.reshape(output_2, [1, n_batch, n_hidden])], axis = 0)
                 # decoder_outputs = tf.concat([decoder_outputs, output], 1)
         if is_training is True:
