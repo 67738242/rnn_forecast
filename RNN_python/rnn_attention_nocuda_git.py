@@ -216,6 +216,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 return nom_x
 
         encoder = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
+        state = encoder.zero_state(n_batch, tf.float32)
+
         # encoder_forward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
         # encoder_backward = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
 
