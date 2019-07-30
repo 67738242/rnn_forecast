@@ -34,21 +34,12 @@ learning_rate = 0.01
 learning_data_day_len = 21
 input_digits = 24 * 7
 output_digits = 24
-<<<<<<< HEAD
-n_hidden = 100
-epochs = 150
-batch_size = 30
-attention_layer_size = 10
-num_units = 100
-ample = 0
-=======
 n_hidden = 50
 epochs = 200
 batch_size = 60
 attention_layer_size = 5
 num_units = 10
 ample = 0.3
->>>>>>> a9bcb17ef2d389cff4b6ca4167f306763479d115
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
@@ -58,11 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
-<<<<<<< HEAD
-input_data_path = '/tmp/RNN_python/series_data/dev_num.xlsx'
-=======
 input_data_path = '/tmp/RNN_python/series_data/dev_num_0_100.xlsx'
->>>>>>> a9bcb17ef2d389cff4b6ca4167f306763479d115
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/2dim_att/'
@@ -99,7 +86,7 @@ class TimeSeriesDataSet:
         for i in range(0, n_index):
 
             data.append(noise_value[i: i + input_digits])
-            target.append(value[i+input_digits: i+input_digits+output_digits])
+            target.append(spy.zscore(value[i+input_digits: i+input_digits+output_digits], axis=0))
 
         X = np.stack(data)
         std_Y = np.stack(target)
@@ -330,7 +317,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     # tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
-                    (output_1, state_1) = decoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
+                    (output_1, state_1) = decoder_1(y[:, t-1, :], state_1)
                     # (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
@@ -451,8 +438,9 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             print('epoch:', epoch,
                   ' validation loss:', val_loss)
 
-        # if early_stopping.validate(val_loss):
+        #if early_stopping.validate(val_loss):
         if val_loss < 0.1:
+        #if any(val_loss < 0.1):
             break
         else:
             tf.reset_default_graph()
@@ -477,16 +465,18 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     fc_input_mean = fc_input[:,:,0:1].mean(axis=1, keepdims=True)
     fc_input_std = fc_input[:,:,0:1].std(axis=1, keepdims=True)
-    print(fc_input_mean, fc_input_std)
+
     fc_output = std_output * fc_input_std + fc_input_mean
     fc_seq = fc_output.reshape(-2)
-    print(fc_seq)
+    print('fc_seq=', fc_seq)
     rnn_np_p_data_sr = np.append(rnn_np_p_data_sr, fc_seq.reshape(-1), axis = 0)
 
     dataframe_2_ = eval_data_set[(learning_data_day_len + k) * 24: \
         (learning_data_day_len + k) * 24 + 24]
-    day_d = dataframe_2_.values.reshape(-1)
-    # print(day_d)
+    # day_d = dataframe_2_.values.reshape(-1)
+    day_d = dataframe_2_.values[:, 0]
+    print('day=', day_d)
+    print(day_d[0])
 
     # if len(day_d) != 24:
     #     break
