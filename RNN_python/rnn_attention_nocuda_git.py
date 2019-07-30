@@ -34,11 +34,11 @@ learning_rate = 0.01
 learning_data_day_len = 28
 input_digits = 24 * 7
 output_digits = 24
-n_hidden = 1000
-epochs = 300
-batch_size = 10
-attention_layer_size = 40
-num_units = 1000
+n_hidden = 50
+epochs = 200
+batch_size = 60
+attention_layer_size = 5
+num_units = 10
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -49,7 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
-input_data_path = '/tmp/RNN_python/series_data/dev_num.xlsx'
+input_data_path = '/tmp/RNN_python/series_data/dev_num_bin.xlsx'
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/2dim_att/'
@@ -276,8 +276,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         #                                    output_attention = False,
         #                                    name = 'att_lay_2')
 
-        state_1 = decoder_1.zero_state(n_batch, tf.float32)\
-            .clone(cell_state=encoder_states_fw)
+        state_1 = decoder_1.zero_state(n_batch, tf.float32)
+            #.clone(cell_state=encoder_states_fw)
 
         # state_2 = decoder_2.zero_state(n_batch, tf.float32)
             # .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
@@ -285,7 +285,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         # state = encoder_states[-1]
         # decoder_outputs = tf.reshape(encoder_outputs[-1,　:,　:], [n_batch, 1])
         # [input_len, n_batch, n_hidden]
-        decoder_1_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, 0], [1, n_batch, n_hidden])
+        # decoder_1_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, 0], [1, n_batch, n_hidden])
+        decoder_1_outputs = tf.zeros((n_out, n_batch, n_hidden))
         # decoder_2_outputs = tf.slice(encoder_outputs, [input_digits-2, 0, n_hidden], [1, n_batch, n_hidden])
         # decoder_2_outputs = encoder_outputs[:, :, n_hidden:][-1]
         # decoder_outputs = [encoder_outputs[-1]]
@@ -355,7 +356,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         t_nom = (t - t_mean)/tf.sqrt(t_vari + 1e+8)
 
         with tf.name_scope('loss'):
-            mse = tf.reduce_mean(tf.square(y - t_nom), axis = [1, 0])
+            mse = tf.reduce_mean(tf.square(y - t_nom), axis = [0,1])
             # mse = tf.reduce_mean(tf.square(y - t), [1, 0])
             return mse
 
@@ -447,6 +448,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
         #if early_stopping.validate(val_loss):
         if val_loss < 0.1:
+        #if any(val_loss < 0.1):
             break
         else:
             tf.reset_default_graph()
