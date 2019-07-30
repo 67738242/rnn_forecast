@@ -35,8 +35,8 @@ learning_data_day_len = 28
 input_digits = 24 * 7
 output_digits = 24
 n_hidden = 1000
-epochs = 500
-batch_size = 70
+epochs = 300
+batch_size = 10
 attention_layer_size = 40
 num_units = 1000
 ample = 0
@@ -445,12 +445,12 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             print('epoch:', epoch,
                   ' validation loss:', val_loss)
 
-        # if early_stopping.validate(val_loss):
-        # if val_loss < 0.1:
-        #    break
-        #else:
-         #   tf.reset_default_graph()
-
+        #if early_stopping.validate(val_loss):
+        if val_loss < 0.1:
+            break
+        else:
+            tf.reset_default_graph()
+    print('end')
     fin_val_loss = np.append(fin_val_loss, val_loss)
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
