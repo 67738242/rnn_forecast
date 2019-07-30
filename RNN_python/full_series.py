@@ -18,11 +18,11 @@ def Insert_row_(row_number, df, row_value):
 
 df_traffic_data = pd.read_excel(
     # 'C:/Users/kenta/Dropbox/RNN_python/series_data/query_result_evl.xlsx',
-    '/Users/masaki/Dropbox/RNN_python/series_data/query_result_evl.xlsx',
+    # '/Users/masaki/Dropbox/RNN_python/series_data/query_result_evl.xlsx',
     # '/Users/masaki/Dropbox/RNN_python/series_data/query_result_attri.xlsx',
     # path_data.resolve(),
     # '/tmp/RNN_python/series_data/query_result_attri.xlsx',
-    # '/tmp/RNN_python/series_data/query_result_evl.xlsx',
+    '/tmp/RNN_python/series_data/query_result_evl.xlsx',
     columns = [0,1,2],
     # columns = [0,1],
     header = 0
@@ -69,13 +69,14 @@ dataframe = dataframe.reset_index()
 dataframe.loc[(dataframe['day_data'] == 'holi') | \
     (dataframe['day'] == 'Sun') | \
     (dataframe['day'] == 'Sat'), \
-    'binari']=1
+    'binari']=0
 
 dataframe.loc[~((dataframe['day_data'] == 'holi') | \
     (dataframe['day'] == 'Sun') | \
     (dataframe['day'] == 'Sat')), \
-    'binari']=0
+    'binari']=100
 
 dataframe = dataframe.set_index(['day_data', 'day', 'date-time'], drop=True)
 
-dataframe.to_excel('/Users/masaki/Dropbox/RNN_python/series_data/dev_num.xlsx')
+dataframe.to_excel('/tmp/RNN_python/series_data/dev_num_0_100.xlsx')
+# dataframe.to_excel('/Users/masaki/Dropbox/RNN_python/series_data/dev_num.xlsx')
