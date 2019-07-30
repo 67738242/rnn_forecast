@@ -69,13 +69,19 @@ dataframe = dataframe.reset_index()
 dataframe.loc[(dataframe['day_data'] == 'holi') | \
     (dataframe['day'] == 'Sun') | \
     (dataframe['day'] == 'Sat'), \
-    'binari']=1
+    'binari']=0
 
 dataframe.loc[~((dataframe['day_data'] == 'holi') | \
     (dataframe['day'] == 'Sun') | \
     (dataframe['day'] == 'Sat')), \
-    'binari']=0
+    'binari']=1
 
+# time = np.tile((np.arange(24)), (1, int(len(dataframe)/24)))
+# time = time.reshape(-1)
+# time = np.append(time, np.arange(len(dataframe)-len(time)))
+# time = time.reshape(-1)
+
+# dataframe['time'] = time
 dataframe = dataframe.set_index(['day_data', 'day', 'date-time'], drop=True)
 
-dataframe.to_excel('/Users/masaki/Dropbox/RNN_python/series_data/dev_num.xlsx')
+dataframe.to_excel('/Users/masaki/rnn_forecast/RNN_python/series_data/dev_num_bin.xlsx')

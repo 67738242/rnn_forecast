@@ -31,14 +31,14 @@ from sklearn.model_selection import train_test_split
 
 learning_rate = 0.01
 # when attention,learning_rate must be 0.001
-learning_data_day_len = 28
+learning_data_day_len = 21
 input_digits = 24 * 7
 output_digits = 24
-n_hidden = 50
-epochs = 200
-batch_size = 60
-attention_layer_size = 5
-num_units = 10
+n_hidden = 100
+epochs = 150
+batch_size = 30
+attention_layer_size = 10
+num_units = 100
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -49,7 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
-input_data_path = '/tmp/RNN_python/series_data/dev_num_bin.xlsx'
+input_data_path = '/tmp/RNN_python/series_data/dev_num.xlsx'
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/2dim_att/'
@@ -222,28 +222,27 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         encoder_outputs = []
         encoder_states = []
 
+        with tf.variable_scope('Encoder'):
+            for t in range(input_digits):
+                if t > 0:
+                    tf.get_variable_scope().reuse_variables()
+                (output, state) = encoder(batch_normalization(input_digits, x)[:, t, :], state)
+                encoder_outputs.append(output)
+                encoder_states.append(state)
+
         # size = [batch_size][input_digits][input_len]
-        x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
-        x = tf.reshape(x, [-1, n_in])
-        x = tf.split(x, input_digits, 0)
+        # x = tf.transpose(batch_normalization(input_digits, x), [1, 0, 2])
+        # x = tf.reshape(x, [-1, n_in])
+        # x = tf.split(x, input_digits, 0)
         # Encode
 
-        # state = encoder.zero_state(n_batch, tf.float32)
 
-        # with tf.variable_scope('Encoder'):
-        #     for t in range(input_digits):
-        #         if t > 0:
-        #             tf.get_variable_scope().reuse_variables()
-        #         (output, state) = encoder(batch_normalization(input_digits, x)[:, t, :], state)
-        #         encoder_outputs.append(output)
-        #         encoder_states.append(state)
-
-        encoder_outputs, encoder_states_fw, encoder_states_bw = tf.nn.static_bidirectional_rnn(
-            encoder_forward,
-            encoder_backward,
-            x,
-            dtype=tf.float32
-            )
+        # encoder_outputs, encoder_states_fw, encoder_states_bw = tf.nn.static_bidirectional_rnn(
+        #     encoder_forward,
+        #     encoder_backward,
+        #     x,
+        #     dtype=tf.float32
+        #     )
         # encoder_outputs size = [time][batch][cell_fw.output_size + cell_bw.output_size]
         # encoder_states_fw, encoder_states_bw is final state
         # Decode
@@ -277,7 +276,6 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         #                                    name = 'att_lay_2')
 
         state_1 = decoder_1.zero_state(n_batch, tf.float32)
-            #.clone(cell_state=encoder_states_fw)
 
         # state_2 = decoder_2.zero_state(n_batch, tf.float32)
             # .clone(cell_state=tf.reshape(encoder_states_bw[-1], [n_batch, n_hidden]))
@@ -356,7 +354,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         t_nom = (t - t_mean)/tf.sqrt(t_vari + 1e+8)
 
         with tf.name_scope('loss'):
-            mse = tf.reduce_mean(tf.square(y - t_nom), axis = [0,1])
+            mse = tf.reduce_mean(tf.square(y - t_nom), axis = [1, 0])
             # mse = tf.reduce_mean(tf.square(y - t), [1, 0])
             return mse
 
@@ -398,32 +396,23 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     input_data = eval_X[k * 24: (k + learning_data_day_len - 1) * 24]
     true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24, :, 0:1]
 
-    # print(input_data[:3])
     input_data_train, input_data_validation, true_data_train, \
         true_data_validation = train_test_split(input_data, true_data, \
             test_size = N_validation)
     # size = [batch_size][input_digits][input_len]
     early_stopping = Early_Stopping(patience=10, verbose=1)
 
-    # print('input_data_train = ', input_data_train[1:4])
+    # print('input_data_train = ', input_data_train)
     # print(len(input_data_train[0]))
     for nolma in range(10):
         for epoch in range(epochs):
             X_, Y_ = shuffle(input_data_train, true_data_train)
+
             with tf.name_scope('train'):
                 for h in range(n_batches):
                     start = h * batch_size
                     end = start + batch_size
-                    # print('begin learning')
-                    # print(y)
-                    # t = Y_[start:end]
-                    # y = inference(X_[start:end], Y_[start:end], batch_size, True,
-                    #               input_digits=input_digits,
-                    #               output_digits=output_digits,
-                    #               n_hidden=n_hidden, n_out=n_out)
-                    # loss = loss(y, t)
-                    #
-                    # train_step(loss, learning_rate)
+
                     sess.run(train_step, feed_dict={
                         x: X_[start:end],
                         t: Y_[start:end],
@@ -446,13 +435,12 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
             print('epoch:', epoch,
                   ' validation loss:', val_loss)
 
-        #if early_stopping.validate(val_loss):
+        # if early_stopping.validate(val_loss):
         if val_loss < 0.1:
-        #if any(val_loss < 0.1):
             break
         else:
             tf.reset_default_graph()
-    print('end')
+
     fin_val_loss = np.append(fin_val_loss, val_loss)
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
@@ -460,8 +448,9 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     fc_input = eval_X[learning_data_day_len * 24 - (input_digits - k * 24)].reshape(1, input_digits, n_in)
     std_fc_input = spy.zscore(fc_input, axis = 1)
+
     z_ = std_fc_input.reshape(1, input_digits, n_in)
-    
+
     std_output = y.eval(session=sess, feed_dict={
         x: z_,
         n_batch: 1,
@@ -472,20 +461,19 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     fc_input_mean = fc_input[:,:,0:1].mean(axis=1, keepdims=True)
     fc_input_std = fc_input[:,:,0:1].std(axis=1, keepdims=True)
-
+    print(fc_input_mean, fc_input_std)
     fc_output = std_output * fc_input_std + fc_input_mean
     fc_seq = fc_output.reshape(-2)
-    print('fc_seq=', fc_seq)
+    print(fc_seq)
     rnn_np_p_data_sr = np.append(rnn_np_p_data_sr, fc_seq.reshape(-1), axis = 0)
 
     dataframe_2_ = eval_data_set[(learning_data_day_len + k) * 24: \
         (learning_data_day_len + k) * 24 + 24]
-    # day_d = dataframe_2_.values.reshape(-1)
-    day_d = dataframe_2_.values[:, 0]
-    print('day=', day_d)
-    print(day_d[0])
-   # if len(day_d) != 24:
-   #     break
+    day_d = dataframe_2_.values.reshape(-1)
+    # print(day_d)
+
+    # if len(day_d) != 24:
+    #     break
 
     series_error.append(fc_seq - day_d)
     # print(series_error)
