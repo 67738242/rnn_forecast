@@ -215,6 +215,14 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                 # print(nom_batch[0], len(nom_batch[0]))
                 return nom_x
 
+        def batch_norm_truedata(x, y):
+            with tf.name_scope('batch_norm_truedata'):
+                eps = 1e-8
+                mean, var = tf.nn.moments(x, [0, 1])
+                nom_y = (y - mean)/tf.sqrt(var + eps)
+
+                return nom_y
+
         encoder = rnn_cell.GRUCell(n_hidden, reuse=tf.AUTO_REUSE)
         state = encoder.zero_state(n_batch, tf.float32)
 
@@ -317,7 +325,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     # tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
-                    (output_1, state_1) = ecoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
+                    (output_1, state_1) = ecoder_1(batch_norm_truedata(x, y)[:, t-1, :], state_1)
                     # (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
@@ -397,7 +405,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     }
 
     input_data = eval_X[k * 24: (k + learning_data_day_len - 1) * 24]
-    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24, :, 0:1]
+    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24]
 
     input_data_train, input_data_validation, true_data_train, \
         true_data_validation = train_test_split(input_data, true_data, \
@@ -464,12 +472,13 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     tf.reset_default_graph()
 
-    fc_input_mean = fc_input[:,:,0:1].mean(axis=1, keepdims=True)
-    fc_input_std = fc_input[:,:,0:1].std(axis=1, keepdims=True)
+    fc_input_mean = fc_input.mean(axis=1, keepdims=True)
+    fc_input_std = fc_input.std(axis=1, keepdims=True)
 
     fc_output = std_output * fc_input_std + fc_input_mean
-    fc_seq = fc_output.reshape(-2)
-    print('fc_seq=', fc_seq)
+    fc_seq = fc_output.reshape(-1)
+    fc_seq_num = fc_seq[:, 0]
+    print('fc_seq=', fc_seq, 'fc_seq_num', fc_seq_num)
     rnn_np_p_data_sr = np.append(rnn_np_p_data_sr, fc_seq.reshape(-1), axis = 0)
 
     dataframe_2_ = eval_data_set[(learning_data_day_len + k) * 24: \
@@ -482,13 +491,13 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     # if len(day_d) != 24:
     #     break
 
-    series_error.append(fc_seq - day_d)
+    series_error.append(fc_seq_num - day_d)
     # print(series_error)
     gauss_error.append(np.prod(normdist(np.reshape(series_error[k], -1),0,50)))
     # print(gauss_error)
     log_gauss_error.append(np.log10(gauss_error[k]))
 
-    day_mape = mape_evaluation(fc_seq, day_d)
+    day_mape = mape_evaluation(fc_seq_num, day_d)
     rnn_day_series_mape.append(day_mape)
     print(log_gauss_error[k])
 
@@ -519,10 +528,10 @@ series_error_data.to_excel(path_output_data + 'seq2seq_error_p_h.xlsx')
 
 wb = openpyxl.load_workbook(path_output_data + '/seq2seq_predict.xlsx')
 sheet = wb['Sheet1']
-sheet.cell(row=1, column=5, value='real_number')
-real_day_data = eval_data_set.values.reshape(-1)[learning_data_day_len * 24:]
+sheet.cell(row=1, column=3, value='real_number')
+real_day_data = eval_data_set.values[learning_data_day_len * 24:]
 for i in range(len(real_day_data)):
-    sheet.cell(row = 2 + i, column=5, value=real_day_data[i])
+    sheet.cell(row = 2 + i, column=3, value=real_day_data[i])
 wb.save(path_output_data + '/seq2seq_predict.xlsx')
 
 print()
