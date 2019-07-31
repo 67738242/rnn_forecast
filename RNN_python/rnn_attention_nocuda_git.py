@@ -34,12 +34,12 @@ learning_rate = 0.01
 learning_data_day_len = 21
 input_digits = 24 * 7
 output_digits = 24
-n_hidden = 50
+n_hidden = 100
 epochs = 200
 batch_size = 60
-attention_layer_size = 5
-num_units = 10
-ample = 0.3
+attention_layer_size = 10
+num_units = 20
+ample = 0
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
@@ -49,7 +49,7 @@ tf.reset_default_graph()
 
 # tfe.enable_eager_execution()
 
-input_data_path = '/tmp/RNN_python/series_data/dev_num_0_100.xlsx'
+input_data_path = '/tmp/RNN_python/series_data/dev_num_bin.xlsx'
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
 path_output_data = '/tmp/RNN_python/2dim_att/'
@@ -86,7 +86,7 @@ class TimeSeriesDataSet:
         for i in range(0, n_index):
 
             data.append(noise_value[i: i + input_digits])
-            target.append(spy.zscore(value[i+input_digits: i+input_digits+output_digits], axis=0))
+            target.append(value[i+input_digits: i+input_digits+output_digits])
 
         X = np.stack(data)
         std_Y = np.stack(target)
@@ -153,7 +153,7 @@ eval_data_set = pd.read_excel(
     index_col=[0, 1, 2]
 )
 
-eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
+eval_data_set_inst = TimeSeriesDataSet(eval_data_set[:1000])
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
     output_digits=output_digits, ample = ample)
@@ -317,7 +317,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     # tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
-                    (output_1, state_1) = decoder_1(y[:, t-1, :], state_1)
+                    (output_1, state_1) = ecoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
                     # (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
@@ -354,7 +354,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     def loss(y, t):
         t_mean, t_vari = tf.nn.moments(t, [0, 1])
-        t_nom = (t - t_mean)/tf.sqrt(t_vari + 1e+8)
+        t_nom = (t - t_mean)/tf.sqrt(t_vari + 1e-8)
 
         with tf.name_scope('loss'):
             mse = tf.reduce_mean(tf.square(y - t_nom), axis = [1, 0])
@@ -405,9 +405,10 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     # size = [batch_size][input_digits][input_len]
     early_stopping = Early_Stopping(patience=10, verbose=1)
 
-    # print('input_data_train = ', input_data_train)
+    print('true_data_train = ', true_data_train)
+    print('true_data_validation =', true_data_validation)
     # print(len(input_data_train[0]))
-    for nolma in range(10):
+    for nolma in range(5):
         for epoch in range(epochs):
             X_, Y_ = shuffle(input_data_train, true_data_train)
 
@@ -442,8 +443,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         if val_loss < 0.1:
         #if any(val_loss < 0.1):
             break
-        else:
-            tf.reset_default_graph()
+        #else:
+            #tf.reset_default_graph()
 
     fin_val_loss = np.append(fin_val_loss, val_loss)
     #forcasting
