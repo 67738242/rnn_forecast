@@ -299,7 +299,17 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
                     # tf.get_variable_scope().reuse_variables()
 
                 if is_training is True:
-                    (output_1, state_1) = decoder_1(batch_normalization(output_digits, y)[:, t-1, :], state_1)
+                    cell_input_bin = np.randam.choice([1, 0],p=[tchr_frcng_thr, 1 - tchr_frcng_thr])
+
+                    if cell_input_bin==1:
+                        cell_input = batch_normalization(output_digits, y)[:, t-1, :]
+
+                    elif t == 1:
+                        cell_input = tf.matmul(decoder_1_outputs[-1], V_hid_1) + c_hid_1
+
+                    else:
+                        cell_input = output_1
+                    (output_1, state_1) = decoder_1(cell_input, state_1)
                     # (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
                     # 直前の出力を求める
