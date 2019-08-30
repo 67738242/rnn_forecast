@@ -32,13 +32,13 @@ from sklearn.model_selection import train_test_split
 learning_rate = 0.01
 # when attention,learning_rate must be 0.001
 learning_data_day_len = 30
-input_digits = 24 * 10
+input_digits = 24 * 5
 output_digits = 24
 n_hidden = 40
-epochs = 100
+epochs = 400
 batch_size = 30
-attention_layer_size = 10
-num_units = 50
+attention_layer_size = 5
+num_units = 20
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -436,8 +436,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
-        # if early_stopping.validate(val_loss):
-        #    break
+        if val_loss < 0.1 and epoch > 200:
+            break
 
     #forcasting
     predicted_traffic = [[None] * len(eval_data_set.columns) \
