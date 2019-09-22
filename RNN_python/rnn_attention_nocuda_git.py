@@ -43,7 +43,7 @@ ample = 0
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
-tchr_frcng_thr = 0.8
+tchr_frcng_thr = 0.5
 input_len = 24 * 10
 
 tf.reset_default_graph()
@@ -436,7 +436,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
-        if val_loss < 0.1 and epoch > 200:
+        if val_loss < 0.05 and epoch > 200:
             break
 
     #forcasting
