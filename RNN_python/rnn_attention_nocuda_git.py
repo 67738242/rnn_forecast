@@ -43,7 +43,7 @@ ample = 0
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
-tchr_frcng_thr = 0.5
+tchr_frcng_thr = 0.65
 input_len = 24 * 10
 
 tf.reset_default_graph()
