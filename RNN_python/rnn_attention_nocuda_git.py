@@ -436,7 +436,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
-        if val_loss < 0.05 and epoch > 200:
+        if val_loss < 0.05 and epoch == 200:
             break
 
     #forcasting
