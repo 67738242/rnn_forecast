@@ -35,15 +35,15 @@ learning_data_day_len = 10
 input_digits = 24 * 3
 output_digits = 24
 n_hidden = 40
-epochs = 400
+epochs = 1500
 batch_size = 30
-attention_layer_size = 5
-num_units = 20
+attention_layer_size = 10
+num_units = 50
 ample = 0
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
-tchr_frcng_thr = 0.9
+tchr_frcng_thr = 0.8
 input_len = 24 * 10
 
 tf.reset_default_graph()
