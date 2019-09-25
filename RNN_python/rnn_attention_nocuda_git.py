@@ -36,6 +36,7 @@ input_digits = 24 * 3
 output_digits = 24
 n_hidden = 40
 epochs = 1500
+eary_stop_epoch = 750
 batch_size = 30
 attention_layer_size = 10
 num_units = 50
@@ -309,6 +310,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
                     else:
                         cell_input = output_1
+
                     (output_1, state_1) = decoder_1(cell_input, state_1)
                     # (output_2, state_2) = decoder_2(batch_normalization(output_digits, y)[:, t-1, :], state_2)
                 else:
@@ -436,7 +438,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
-        if val_loss < 0.05 and epoch == 200:
+        if val_loss < 0.05 and epoch == eary_stop_epoch:
             break
 
     #forcasting
