@@ -35,8 +35,8 @@ learning_data_day_len = 10
 input_digits = 24 * 3
 output_digits = 24
 n_hidden = 40
-epochs = 1500
-eary_stop_epoch = 750
+epochs = 150
+eary_stop_epoch = 150
 batch_size = 30
 attention_layer_size = 10
 num_units = 50
@@ -44,7 +44,7 @@ ample = 0
 # day = 'Tue'
 # learning_length = 700
 thrd = 54.5
-tchr_frcng_thr = 0.8
+tchr_frcng_thr = 1
 input_len = 24 * 10
 
 tf.reset_default_graph()
