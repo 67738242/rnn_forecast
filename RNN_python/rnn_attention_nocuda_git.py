@@ -11,7 +11,7 @@ from tensorflow.contrib import seq2seq
 from tensorflow.contrib import cudnn_rnn
 from tensorflow.nn import rnn_cell
 
-from tensorflow.python import debug as tf_debug
+# from tensorflow.python import debug as tf_debug
 
 # import make_slide_win as msw
 #import cufflinks as cf
@@ -394,7 +394,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         init = tf.global_variables_initializer()
         sess = tf.Session()
         # sess = tf_debug.LocalCLIDebugWrapperSession(sess)
-        sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:6064')
+        sess = tf_debug.TensorBoardDebugWrapperSession(sess, '10.35.153.1:8888')
+        # sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:6064')
         if k == 0:
             tf.summary.FileWriter(LOG_DIR, sess.graph)
         sess.run(init)
