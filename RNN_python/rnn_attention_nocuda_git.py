@@ -11,7 +11,7 @@ from tensorflow.contrib import seq2seq
 from tensorflow.contrib import cudnn_rnn
 from tensorflow.nn import rnn_cell
 
-# from tensorflow.python import debug as tf_debug
+from tensorflow.python import debug as tf_debug
 
 # import make_slide_win as msw
 #import cufflinks as cf
