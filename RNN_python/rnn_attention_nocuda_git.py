@@ -392,7 +392,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 
     with tf.name_scope('initial'):
         init = tf.global_variables_initializer()
-        # sess = tf.Session()
+        sess = tf.Session()
         # sess = tf_debug.LocalCLIDebugWrapperSession(sess)
         sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:8888')
         # sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:6064')
