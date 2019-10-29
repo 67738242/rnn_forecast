@@ -35,7 +35,7 @@ learning_data_day_len = 10
 input_digits = 24 * 3
 output_digits = 24
 n_hidden = 40
-epochs = 150
+epochs = 1000
 eary_stop_epoch = 150
 batch_size = 30
 attention_layer_size = 10
@@ -394,7 +394,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         init = tf.global_variables_initializer()
         sess = tf.Session()
         # sess = tf_debug.LocalCLIDebugWrapperSession(sess)
-        sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:8888')
+        # sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:8888')
         # sess = tf_debug.TensorBoardDebugWrapperSession(sess, 'localhost:6064')
         if k == 0:
             tf.summary.FileWriter(LOG_DIR, sess.graph)
