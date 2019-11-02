@@ -153,7 +153,7 @@ eval_data_set_kari = pd.read_excel(
     '/tmp/RNN_python/series_data/dev_num_half.xlsx'
 )
 eval_data_set = eval_data_set_kari[(eval_data_set_kari.is_holiday==0) & (eval_data_set_kari.weekday!=5) & (eval_data_set_kari.weekday!=6)]
-eval_data_set_inst = TimeSeriesDataSet(eval_data_set.time_diff)
+eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
     output_digits=output_digits, ample = ample)
