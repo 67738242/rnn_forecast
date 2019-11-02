@@ -31,9 +31,10 @@ from sklearn.model_selection import train_test_split
 
 learning_rate = 0.01
 # when attention,learning_rate must be 0.001
+season_len = 48
 learning_data_day_len = 10
-input_digits = 24 * 3
-output_digits = 24
+input_digits = season_len * 3
+output_digits = season_len
 n_hidden = 40
 epochs = 1000
 eary_stop_epoch = 150
@@ -45,7 +46,7 @@ ample = 0
 # learning_length = 700
 thrd = 54.5
 tchr_frcng_thr = 1
-input_len = 24 * 10
+input_len = season_len * 10
 
 tf.reset_default_graph()
 
@@ -53,7 +54,7 @@ tf.reset_default_graph()
 
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-path_output_data = '/tmp/RNN_python/schd_sam_output_data/'
+path_output_data = '/tmp/RNN_python/schd_sam_p30_output_data/'
 LOG_DIR = '/tmp/RNN_python/rnn_log'
 
 os.makedirs(path_output_data, exist_ok=True)
@@ -141,16 +142,18 @@ class Early_Stopping():
 
 
 def mape_evaluation(p_data, day_d):
-    return np.sum(abs((p_data - day_d)/day_d), axis = 0)*100/24
+    return np.sum(abs((p_data - day_d)/day_d), axis = 0)*100/season_len
 
 def normdist(x,mu,sigma):
     # ndarray xに対する平均mu, 標準偏差sigmaの正規分布の確率密度関数を返す関数
     return np.array([norm.pdf(x = x[i], loc = mu, scale = sigma) for i in range(len(x)) ])
 
 
-eval_data_set_kari = hlt.eval_series_data()
-eval_data_set = eval_data_set_kari
-eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
+eval_data_set_kari = pd.read_excel(
+    '/tmp/RNN_python/series_data/dev_num_half.xlsx'
+)
+eval_data_set = eval_data_set_kari[(eval_data_set_kari.is_holiday==0) & (eval_data_set_kari.weekday!=5) & (eval_data_set_kari.weekday!=6)]
+eval_data_set_inst = TimeSeriesDataSet(eval_data_set.time_diff)
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
     output_digits=output_digits, ample = ample)
@@ -158,11 +161,11 @@ eval_series_length = eval_data_set_inst.series_length
 n_in = len(eval_X[0][0])
 n_out = len(eval_Y[0][0])
 
-N_train = int((learning_data_day_len * 24 - (input_digits + output_digits))* 0.95)
-N_validation = (learning_data_day_len * 24- (input_digits + output_digits)) - N_train
+N_train = int((learning_data_day_len * season_len - (input_digits + output_digits))* 0.95)
+N_validation = (learning_data_day_len * season_len- (input_digits + output_digits)) - N_train
 n_batches = N_train // batch_size
 
-num_day = eval_series_length // 24 - 1
+num_day = eval_series_length // season_len - 1
 
 dataframe_2_  = []
 day_d = []
@@ -178,7 +181,7 @@ num_of_err = 0
 
 anom_day_fig = plt.figure(figsize=(15, 25))
 
-for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_digits)) // 24 - 1):
+for k in range(0, (eval_series_length - (learning_data_day_len * season_len + output_digits)) // season_len - 1):
     tf.reset_default_graph()
     def inference(x, y, n_batch, is_training,
                   input_digits=None,
@@ -405,8 +408,8 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         'val_acc': []
     }
 
-    input_data = eval_X[k * 24: (k + learning_data_day_len - 1) * 24]
-    true_data = eval_Y[k * 24: (k + learning_data_day_len - 1) * 24]
+    input_data = eval_X[k * season_len: (k + learning_data_day_len - 1) * season_len]
+    true_data = eval_Y[k * season_len: (k + learning_data_day_len - 1) * season_len]
 
     # print(input_data[:3])
     input_data_train, input_data_validation, true_data_train, \
@@ -463,7 +466,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     predicted_traffic = [[None] * len(eval_data_set.columns) \
     for l in range(input_digits)]
 
-    fc_input = eval_X[learning_data_day_len * 24 - (input_digits - k * 24)].reshape(1, input_digits, 1)
+    fc_input = eval_X[learning_data_day_len * season_len - (input_digits - k * season_len)].reshape(1, input_digits, 1)
     std_fc_input = spy.zscore(fc_input, axis = 1)
 
     z_ = std_fc_input.reshape(1, input_digits, 1)
@@ -484,12 +487,12 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
     # print(fc_seq)
     rnn_np_p_data_sr = np.append(rnn_np_p_data_sr, fc_seq.reshape(-1), axis = 0)
 
-    dataframe_2_ = eval_data_set[(learning_data_day_len + k) * 24: \
-        (learning_data_day_len + k) * 24 + 24]
+    dataframe_2_ = eval_data_set[(learning_data_day_len + k) * season_len: \
+        (learning_data_day_len + k) * season_len + season_len]
     day_d = dataframe_2_.values.reshape(-1)
     # print(day_d)
 
-    if len(day_d) != 24:
+    if len(day_d) != season_len:
         break
 
     series_error.append(fc_seq - day_d)
@@ -515,7 +518,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
         name = fig_name[7: 13] + fig_name[25:39]
 
         day_ax = anom_day_fig.add_subplot(7, 3, an_d) #sharex=True, sharey=True)
-        # sarima = day_ax.plot(sarima_p_data_sr[learning_data_day_len - input_len // 24 + k]\
+        # sarima = day_ax.plot(sarima_p_data_sr[learning_data_day_len - input_len // season_len + k]\
             # , 'r', label = 'SARIMA')
         rnn = day_ax.plot(fc_seq, label = 'RNN')
         real = day_ax.plot(day_d,label = 'real', linestyle = 'dotted')
@@ -527,12 +530,12 @@ for k in range(0, (eval_series_length - (learning_data_day_len * 24 + output_dig
 anom_day_fig.savefig(path_fig + 'rnn_seq2seq_lkhd_anormal_day.eps', dpi=250)
 
 # predicted_traffic_data = pd.DataFrame(rnn_np_p_data_sr, \
-#     columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
-#     index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].index)
+#     columns = eval_data_set[learning_data_day_len * season_len:learning_data_day_len * season_len + len(rnn_np_p_data_sr)].columns, \
+#     index=eval_data_set[learning_data_day_len * season_len:learning_data_day_len * season_len + len(rnn_np_p_data_sr)].index)
 
 predicted_traffic_data = pd.DataFrame(rnn_np_p_data_sr, \
-    columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
-    index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].index)
+    columns = eval_data_set[learning_data_day_len * season_len:learning_data_day_len * season_len + len(rnn_np_p_data_sr)].columns, \
+    index=eval_data_set[learning_data_day_len * season_len:learning_data_day_len * season_len + len(rnn_np_p_data_sr)].index)
 
 predicted_traffic_data.to_excel(path_output_data + 'seq2seq_predict.xlsx')
 
@@ -541,15 +544,15 @@ log_gauss_error_data = pd.DataFrame(log_gauss_error)
 log_gauss_error_data.to_excel(path_output_data + 'seq2seq_error_gauss.xlsx')
 
 series_error_data = pd.DataFrame(np.reshape(series_error, -1), \
-    columns = eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].columns, \
-    index=eval_data_set[learning_data_day_len * 24:learning_data_day_len * 24 + len(rnn_np_p_data_sr)].index)
+    columns = eval_data_set[learning_data_day_len * season_len:learning_data_day_len * season_len + len(rnn_np_p_data_sr)].columns, \
+    index=eval_data_set[learning_data_day_len * season_len:learning_data_day_len * season_len + len(rnn_np_p_data_sr)].index)
 
 series_error_data.to_excel(path_output_data + 'seq2seq_error_p_h.xlsx')
 
 wb = openpyxl.load_workbook(path_output_data + '/seq2seq_predict.xlsx')
 sheet = wb['Sheet1']
 sheet.cell(row=1, column=5, value='real_number')
-real_day_data = eval_data_set.values.reshape(-1)[learning_data_day_len * 24:]
+real_day_data = eval_data_set.values.reshape(-1)[learning_data_day_len * season_len:]
 for i in range(len(real_day_data)):
     sheet.cell(row = 2 + i, column=5, value=real_day_data[i])
 wb.save(path_output_data + '/seq2seq_predict.xlsx')
