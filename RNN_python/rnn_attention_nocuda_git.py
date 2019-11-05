@@ -157,8 +157,9 @@ eval_data_set_kari = eval_data_set_kari.reset_index()
 
 eval_data_set = eval_data_set_kari[(eval_data_set_kari.is_holiday==0) & \
     ((eval_data_set_kari.weekday!=5) & (eval_data_set_kari.weekday!=6))]
+eval_data_set=eval_data_set.set_index(['is_holiday', 'weekday', 'index'])
 
-eval_data_set_inst = TimeSeriesDataSet(eval_data_set.set_index(['is_holiday', 'weekday', 'index']))
+eval_data_set_inst = TimeSeriesDataSet(eval_data_set)
 eval_series_length = eval_data_set_inst.series_length
 (eval_X, eval_Y) = eval_data_set_inst.next_batch(input_digits = input_digits, \
     output_digits=output_digits, ample = ample)
