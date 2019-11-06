@@ -35,12 +35,12 @@ season_len = 48
 learning_data_day_len = 10
 input_digits = season_len * 3
 output_digits = season_len
-n_hidden = 40
-epochs = 1000
-eary_stop_epoch = 150
+n_hidden = 80
+epochs = 500
+early_stop_epoch = 200
 batch_size = 30
-attention_layer_size = 10
-num_units = 50
+attention_layer_size = 20
+num_units = 100
 ample = 0
 # day = 'Tue'
 # learning_length = 700
@@ -54,7 +54,20 @@ tf.reset_default_graph()
 
 
 path_fig = '/tmp/RNN_python/figures_seq2seq_test/'
-path_output_data = '/tmp/RNN_python/schd_sam_p30_output_data/'
+path_output_data = '/tmp/RNN_python/schd_sam_p30_output_data_schd_sam_p30min_\
+learning_rate=0_01_\
+season_len='+str(season_len)+'\
+learning_data_day_len='+str(learning_data_day_len)+'\
+input_digits='+str(input_digits)+'\
+output_digits='+str(output_digits)+'\
+n_hidden='+str(n_hidden)+'\
+epochs='+str(epochs)+'\
+early_stop_epoch='+str(early_stop_epoch)+'\
+batch_size='+str(batch_size)+'\
+attention_layer_size='+str(attention_layer_size)+'\
+num_units='+str(num_units)+'\
+tchr_frcng_thr='+str(tchr_frcng_thr)+'\
+input_len='+str(input_len)+'/'
 LOG_DIR = '/tmp/RNN_python/rnn_log'
 
 os.makedirs(path_output_data, exist_ok=True)
@@ -465,7 +478,7 @@ for k in range(0, (eval_series_length - (learning_data_day_len * season_len + ou
         print('epoch:', epoch,
               ' validation loss:', val_loss)
 
-        if val_loss < 0.05 and epoch == eary_stop_epoch:
+        if val_loss < 0.05 and epoch == early_stop_epoch:
             break
 
     #forcasting
